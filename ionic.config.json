@@ -1,0 +1,7 @@
+{
+  "name": "qr-scener",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,0 +1,8 @@
+{
+    "BUTTON": {
+        "TEST": "Test"
+    },
+    "TEST": {
+        "STRING": "Test lng string"
+    }
+}
