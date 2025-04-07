@@ -11,18 +11,27 @@ import { HttpClient } from '@angular/common/http';
 export class HomePage implements OnInit {
   isSupported = false;
   barcodes: Barcode[] = [];
-  apiUrl = 'https://your-backend.com/api'; // Replace with your real backend API
-  bgColor = 'white'; // Default background color
+  apiUrl = 'https://your-backend.com/api';
+  bgColor = 'white';
+  private isModuleInstalled = false;
 
   constructor(private alertController: AlertController, private http: HttpClient) {}
 
-  ngOnInit() {
-    BarcodeScanner.isSupported().then((result) => {
+  async ngOnInit() {
+    try {
+      const result = await BarcodeScanner.isSupported();
       this.isSupported = result.supported;
-    }).catch((error) => {
-      console.error('Error checking if Barcode Scanner is supported', error);
-    });
+
+      // Try installing module once here
+      if (!this.isModuleInstalled) {
+        await BarcodeScanner.installGoogleBarcodeScannerModule();
+        this.isModuleInstalled = true;
+      }
+    } catch (error) {
+      console.error('Error during initialization', error);
+    }
   }
+
 
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
