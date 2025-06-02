@@ -1,27 +1,63 @@
-#container {
+ion-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+a {
+  display: flex;
+  justify-content: flex-end;
+}
+
+a .phone {
+  color: black;
+}
+
+h1 {
   text-align: center;
+  color: #e60a24;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  margin-top: 5rem;
+}
 
+h2 {
+  text-align: center; 
+}
+
+.ticket-container{
+  height: auto;
+  width: 80vmin;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  //top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 12rem;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.ticket-container img {
+  width: 100%;
+  height: 100%;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+.qr-data {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
 
-  color: #8c8c8c;
-
-  margin: 0;
 }
 
-#container a {
-  text-decoration: none;
+ion-button {
+  --background: #096b9c;
+  --color: white;
+  width: 80%;
+  height: 10%;
+  font-size: 1.5rem;
+  position: absolute;
+  //bottom: 0%;
+  left: 10%;
+  margin-top: 25rem;
 }

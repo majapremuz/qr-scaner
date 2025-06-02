@@ -1,19 +1,43 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Card Scanner</ion-title>
+    <img src="assets/logo.png" alt="logo image" class="logo">
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngStyle]="{'background-color': bgColor}">
+<ion-content>
+  <h1>Ticket Scanner</h1>
   <ion-list>
     <ion-item *ngFor="let barcode of barcodes">
       <ion-label position="stacked">{{ barcode.format }}</ion-label>
       <ion-input type="text" [value]="barcode.rawValue"></ion-input>
     </ion-item>
   </ion-list>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="scan()" [disabled]="!isSupported">
-      <ion-icon name="scan"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+
+  <div class="ticket-container">
+    <img *ngIf="!userData && bgColor !== 'red'" src="assets/qr_border.png" alt="qr border">
+    <div *ngIf="userData" class="qr-data" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
+          <h2>Ticket Info</h2>
+        <section>
+          <p><strong>Start Date:</strong> {{ userData.startdate }}</p>
+          <p><strong>Start Time:</strong> {{ userData.starttime }}</p>
+          <p><strong>Name:</strong> {{ userData.name }} {{ userData.surname }}</p>
+          <p><strong>Email:</strong> {{ userData.mail }}</p>
+          <p><strong>Phone:</strong> {{ userData.phone }}</p>
+          <p><strong>Message:</strong> {{ userData.message }}</p>
+          <p><strong>Kids:</strong> {{ userData.numberkids }}</p>
+          <p><strong>Teens:</strong> {{ userData.numberteens }}</p>
+          <p><strong>Adults:</strong> {{ userData.numberadults }}</p>
+        </section>
+    </div>
+  
+    <div *ngIf="!userData && bgColor === 'red'" class="qr-error" [ngStyle]="{ 'background-color': bgColor }">
+      <h2>Ticket Invalid</h2>
+      <p>This ticket has already been sold.</p>
+    </div>
+
+  </div>
+  
+    <ion-button (click)="scan()" [disabled]="!isSupported">
+      SCAN
+    </ion-button>
 </ion-content>
