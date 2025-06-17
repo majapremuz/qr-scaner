@@ -14,7 +14,7 @@
   </ion-list>
 
   <div class="ticket-container">
-    <img *ngIf="!userData && bgColor !== 'red'" src="assets/qr_border.png" alt="qr border">
+    <img *ngIf="!scanned" class="qr-border" src="assets/qr_border.png" alt="qr border">
     <div *ngIf="userData" class="qr-data" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
           <h2>Ticket Info</h2>
         <section>
@@ -29,8 +29,25 @@
           <p><strong>Adults:</strong> {{ userData.numberadults }}</p>
         </section>
     </div>
+
+    <div *ngIf="reservedData && bgColor === 'yellow'" class="qr-reserved" [ngStyle]="{ 'background-color': bgColor }">
+     <h2>Ticket Price: {{ reservedData.price }},00 € </h2>
+
+     <section>
+          <p><strong>Start Date:</strong> {{ reservedData.startdate }}</p>
+          <p><strong>Start Time:</strong> {{ reservedData.starttime }}</p>
+          <p><strong>Name:</strong> {{ reservedData.name }} {{ reservedData.surname }}</p>
+          <p><strong>Email:</strong> {{ reservedData.mail }}</p>
+          <p><strong>Phone:</strong> {{ reservedData.phone }}</p>
+          <p><strong>Message:</strong> {{ reservedData.message }}</p>
+          <p><strong>Kids:</strong> {{ reservedData.numberkids }}</p>
+          <p><strong>Teens:</strong> {{ reservedData.numberteens }}</p>
+          <p><strong>Adults:</strong> {{ reservedData.numberadults }}</p>
+        </section>
+
+   </div>
   
-    <div *ngIf="!userData && bgColor === 'red'" class="qr-error" [ngStyle]="{ 'background-color': bgColor }">
+    <div *ngIf="!userData && bgColor === 'red'" class="qr-error" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
       <h2>Ticket Invalid</h2>
       <p>This ticket has already been sold.</p>
     </div>

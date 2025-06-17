@@ -16,6 +16,8 @@ export class HomePage implements OnInit {
   apiUrl = 'https://tickets.semisubmarine-pakostane.com/api/code.php';
   bgColor = 'white';
   textColor = 'white';
+  reservedData: any = null;
+  scanned = false;
   private isModuleInstalled = false;
 
   constructor(private alertController: AlertController, private http: HttpClient) {}
@@ -70,23 +72,34 @@ export class HomePage implements OnInit {
 
     console.log('Raw API response:', rawResponse);
 
-    // If it's an array, use the first element
     const response = Array.isArray(rawResponse) ? rawResponse[0] : rawResponse;
 
-    if (response && response.response === 'Success') {
+    const price = Number(response?.price); 
+    this.scanned = true;
+    
+    if (response && response.response === 'Success' && price === 0) {
       this.updateBackgroundColor('valid');
       this.userData = response;
+      this.reservedData = null;
       console.log('User data:', this.userData);
+    } else if (response && response.response === 'Success' && price > 0) {
+      this.updateBackgroundColor('reserved');
+      this.userData = null;
+      this.reservedData = response;
+      console.log('Reserved ticket:', this.reservedData);
     } else {
       this.userData = null;
+      this.reservedData = null;
       this.updateBackgroundColor('sold');
     }
   } catch (error) {
     console.error('Error validating QR code', error);
     this.userData = null;
+    this.reservedData = null;
     this.presentAlert('Failed to validate QR code.');
   }
 }
+
 
 
   updateBackgroundColor(status: string) {
