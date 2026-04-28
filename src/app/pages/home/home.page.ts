@@ -1,84 +1,88 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Router } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import * as CryptoJS from 'crypto-js';
-import { IonToast, ToastController } from '@ionic/angular/standalone';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-
-interface ServerResponse {
-  response: string;
-}
 
 @Component({
   selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, IonToast]
+  imports: [IonicModule, CommonModule]
 })
 export class HomePage implements OnInit {
-  
-  applyForm= new FormGroup ({
-    username: new FormControl(""),
-    password: new FormControl("")
-  })
+  currentPage: string = 'home';
+  menuOpen = false;
+  selectedDate: string = '';
+  isDateModalOpen = false;
 
   constructor(
-    private http: HttpClient,
-    private route: Router,
-    private toastController: ToastController,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
     private authService: AuthService
-  ) {}
+  ) {
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      if (event.url.includes('one-way-ticket')) {
+        this.currentPage = 'one-way-ticket';
+      } else if (event.url.includes('return-ticket')) {
+        this.currentPage = 'return-ticket';
+      } else if (event.url.includes('list')) {
+        this.currentPage = 'list';
+      } else if (event.url.includes('scanner')) {
+        this.currentPage = 'scanner';
+      }
+      this.cdr.detectChanges();
+    });
+  }
 
-  async ngOnInit() {}
+  ngOnInit() {
+  }
 
-  async login() {
-    /*const username = this.applyForm.value?.username || '';
-    const password = this.applyForm.value?.password || '';
+  toggleMenu() {
+  this.menuOpen = !this.menuOpen;
+}
 
-    const hashedUsername = CryptoJS.SHA1(username).toString();
-    const hashedPassword = CryptoJS.SHA1(password).toString();
-  
-  
-    if (this.applyForm.valid && username && password) {
-      this.http.post<ServerResponse[]>('https://test.com/api/login.php', {
-        username: hashedUsername,
-        password: hashedPassword
-      }).subscribe({
-        next: (response) => {
-          const serverResponse = response[0];
-          if (serverResponse && serverResponse.response === 'Success') {
-            this.authService.login(username, password);
-            this.route.navigate(['/one-way-ticket']);
-          } else {
-            this.toastController.create({
-              message: 'Prijava neuspijela. Molim Vas da provrijerite da li su podaci ispravni.',
-              duration: 3000,
-              color: 'danger'
-            }).then(toast => toast.present());  
-          }
-        },
-        error: (error) => {
-          this.toastController.create({
-            message: 'Greška kod prijave. Molim Vas da pokušate ponovno kasnije.',
-            duration: 3000,
-            color: 'danger'
-          }).then(toast => toast.present());
-          console.error('Login failed', error);
-        }
-      });
-    } else {
-      this.toastController.create({
-        message: 'Molim Vas da ispunite oba polja',
-        duration: 3000,
-        color: 'danger'
-      }).then(toast => toast.present());
-    }*/
+getTodayLocal(): string {
+  const today = new Date();
+  const offset = today.getTimezoneOffset();
+  const local = new Date(today.getTime() - offset * 60000);
+  return local.toISOString().split('T')[0];
+}
 
-    this.route.navigate(['/one-way-ticket']);
-  }   
-    
+minDate = this.getTodayLocal();
+maxDate = new Date(new Date().setDate(new Date().getDate() + 30))
+  .toISOString()
+  .split('T')[0];
+
+onDateChange(event: any) {
+  this.selectedDate = event.detail.value;
+  this.isDateModalOpen = false;
+}
+
+  navOneway() {
+    this.router.navigate(['/one-way-ticket']);
+  }
+
+  navReturnTicket() {
+    this.router.navigate(['/return-ticket']);
+  }
+
+  navList() {
+    this.router.navigate(['/list']);
+  }
+
+  navScanner() {
+    this.router.navigate(['/scanner']);
+  }
+
+  navlogout() {
+    this.authService.logout();
+    this.router.navigate(['/home']);
+  }
+
 }

@@ -1,10 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { AlertType } from 'src/app/services/controller.service';
 
 @Component({
   selector: 'app-info',
   templateUrl: './info.component.html',
   styleUrls: ['./info.component.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule]
 })
 export class InfoComponent  implements OnInit {
 

@@ -1,10 +1,112 @@
-<ion-content>
-  <ion-card>
-    <form [formGroup]="applyForm" (ngSubmit)="login()">
-        <ion-input placeholder="Korisničko ime" type="text" formControlName="username" ></ion-input>
-        <ion-input placeholder="Lozinka" type="password" formControlName="password"></ion-input>
+  <ion-header>
+  <ion-toolbar>
+    <img src="assets/logo.png" alt="logo image" class="logo">
 
-      <ion-button name="submit" type="submit">Prijava</ion-button>
-    </form>  
-  </ion-card>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleMenu()">
+        <ion-icon name="menu" class="menu-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- dropdown menu -->
+<div class="menu" [class.open]="menuOpen">
+  <a (click)="navOneway()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
+  <a (click)="navReturnTicket()" [ngClass]="{'active-nav': currentPage === 'return-ticket'}">Izbor termina i podaci naručitelja</a>
+  <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'list'}">Potvrda narudžbe</a>
+  <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'list'}">Izdavanje karte i računa</a>
+  <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
+</div>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <h1>Polazna točka</h1>
+
+    <div class="select-container">
+      <select name="polanost" id="">
+        <option value="">Riva pakoštane</option>
+      </select>
+    </div>
+
+    <h1>Izaberite datum</h1>
+
+<div class="select-container">
+  <h2>Datum vožnje</h2>
+  <ion-item button (click)="isDateModalOpen = true">
+      {{ selectedDate ? (selectedDate | date:'yyyy-MM-dd') : '' }}
+  </ion-item>
+
+      <ion-modal [isOpen]="isDateModalOpen" (didDismiss)="isDateModalOpen = false" class="calendar">
+        <ng-template>
+          <ion-content>
+            <ion-datetime
+              presentation="date"
+              [min]="minDate"
+              [max]="maxDate"
+              (ionChange)="onDateChange($event)">
+            </ion-datetime>
+
+            <ion-button expand="block" (click)="isDateModalOpen = false">
+              Potvrdi
+            </ion-button>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+    </div>
+    
+    <h1>Broj putnika</h1>
+    <div class="select-container">
+      <h2>Broj odraslih putnika (stariji od 15 godina) </h2>
+    <select name="" id="">
+      <option value="">1</option>
+      <option value="">2</option>
+      <option value="">3</option>
+    </select>
+
+    <h2>Broj putnika 3 - 14 godina </h2>
+    <select name="" id="">
+      <option value="">1</option>
+      <option value="">2</option>
+      <option value="">3</option>
+    </select>
+
+    <h2>Broj putnika 0 - 2 godine </h2>
+    <select name="" id="">
+      <option value="">1</option>
+      <option value="">2</option>
+      <option value="">3</option>
+    </select>
+    </div>
+    
+    <ion-button expand="block">Sljedeći korak</ion-button>
+  </div>
+
+  <ion-footer>
+  <div class="footer-container">
+    <h1>Contact us</h1>
+  <p>+385 91 565 3222</p>
+  <p>info@semisubmarine-pakostane.com</p>
+
+  <h1>Adress</h1>
+  <p>Obala kralja Petra Zvonimira IV bb</p>
+  <p>Pakoštane, Croatia</p>
+
+  <img src="assets/logo-white.png" alt="logo image" class="logo">
+
+  <div class="cards-div">
+    <img src="assets/corvus.png" alt="corvuspay" class="cards">
+    <img src="assets/visa.png" alt="visa" class="cards">
+    <img src="assets/mastercard.png" alt="mastercard" class="cards">
+    <img src="assets/maestro.png" alt="maestro" class="cards">
+    <img src="assets/diners.png" alt="diners" class="cards">
+    <img src="assets/visa-secure.png" alt="visa-secure" class="cards">
+    <img src="assets/diners-online.png" alt="diners online" class="cards">
+    <img src="assets/mastercard2.png" alt="mastercard2" class="cards">
+  </div>
+  </div>
+</ion-footer>
+
 </ion-content>
+
+

@@ -15,6 +15,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { App } from '@capacitor/app';
 
 @NgModule({
   declarations: [],
@@ -34,7 +35,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
     })
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
 
