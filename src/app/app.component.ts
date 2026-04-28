@@ -1,4 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { IonRouterOutlet, Platform } from '@ionic/angular';
 import { TranslateConfigService } from './services/translate-config.service';
 import { ControllerService } from './services/controller.service';
@@ -11,6 +13,8 @@ import { App } from '@capacitor/app';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule]
 })
 export class AppComponent {
 

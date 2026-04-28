@@ -13,6 +13,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'scanner',
+    loadChildren: () => import('./pages/scanner/scanner.module').then( m => m.ScannerPageModule)
+  }
 ];
 
 @NgModule({

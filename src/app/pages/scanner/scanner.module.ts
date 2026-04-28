@@ -2,22 +2,22 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { HomePage } from './home.page';
+import { ScannerPage } from './scanner.page';
 
-import { HomePageRoutingModule } from './home-routing.module';
+import { ScannerPageRoutingModule } from './scanner-routing.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   imports: [
-    HomePage,
+    ScannerPage,
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule,
+    ScannerPageRoutingModule,
     TranslateModule,
     ComponentsModule
   ],
   declarations: []
 })
-export class HomePageModule {}
+export class ScannerPageModule {}

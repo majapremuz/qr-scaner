@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -16,8 +17,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicStorageModule } from '@ionic/storage-angular';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [],
   imports: [
+    AppComponent,
     BrowserModule, 
     IonicModule.forRoot(), 
     AppRoutingModule,
@@ -32,7 +34,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
     })
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
+  bootstrap: [],
 })
 export class AppModule {}
 
