@@ -64,25 +64,25 @@ onDateChange(event: any) {
   this.isDateModalOpen = false;
 }
 
-  navOneway() {
-    this.router.navigate(['/one-way-ticket']);
+  navHome() {
+    this.router.navigate(['/home']);
   }
 
-  navReturnTicket() {
-    this.router.navigate(['/return-ticket']);
+  navInfo() {
+    this.router.navigate(['/info']);
   }
 
-  navList() {
-    this.router.navigate(['/list']);
+  navPotvrda() {
+    this.router.navigate(['/potvrda']);
+  }
+
+  navIzdavanje() {
+    this.router.navigate(['/izdavanje']);
   }
 
   navScanner() {
     this.router.navigate(['/scanner']);
   }
 
-  navlogout() {
-    this.authService.logout();
-    this.router.navigate(['/home']);
-  }
 
 }

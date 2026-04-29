@@ -21,65 +21,82 @@
 
 <ion-content [fullscreen]="true">
   <div class="container">
-    <h1>Polazna točka</h1>
-
+    <h1>Slobodni termini na izabrani dan</h1>
+      
     <div class="select-container">
-      <select name="polanost" id="">
-        <option value="">Riva pakoštane</option>
-      </select>
+      <ion-radio-group>
+        <ion-item class="date" lines="none">
+      <ion-radio slot="start"></ion-radio>
+      <ion-label>
+        <h2> <b>09:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+      </ion-radio-group>
+      
+      <ion-radio-group>
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start"></ion-radio>
+      <ion-label>
+      <h2><b>10:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+      </ion-radio-group>
+
+      <ion-radio-group>
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start"></ion-radio>
+      <ion-label>
+      <h2><b>11:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+      </ion-radio-group>
     </div>
 
-    <h1>Izaberite datum</h1>
+  <h1>Osobni podaci</h1>
 
 <div class="select-container">
-  <h2>Datum vožnje</h2>
-  <ion-item button (click)="isDateModalOpen = true">
-      {{ selectedDate ? (selectedDate | date:'yyyy-MM-dd') : '' }}
+  <ion-label>
+      <h2>
+        Ime
+      </h2>
+    </ion-label>
+  <ion-item>
+    <ion-input></ion-input>
   </ion-item>
 
-      <ion-modal [isOpen]="isDateModalOpen" (didDismiss)="isDateModalOpen = false" class="calendar">
-        <ng-template>
-          <ion-content>
-            <ion-datetime
-              presentation="date"
-              [min]="minDate"
-              [max]="maxDate"
-              (ionChange)="onDateChange($event)">
-            </ion-datetime>
+  <ion-label>
+      <h2>
+        Prezime
+      </h2>
+    </ion-label>
+  <ion-item>
+    <ion-input></ion-input>
+  </ion-item>
 
-            <ion-button expand="block" (click)="isDateModalOpen = false">
-              Potvrdi
-            </ion-button>
-          </ion-content>
-        </ng-template>
-      </ion-modal>
+  <ion-label>
+      <h2>Telefon/mobitel</h2>
+    </ion-label>
+  <ion-item>
+    <ion-input></ion-input>
+  </ion-item>
+
+  <ion-label>
+      <h2>E-mail</h2>
+    </ion-label>
+  <ion-item>
+    <ion-input></ion-input>
+  </ion-item>
+
+  <ion-label>
+      <h2>Poruka/napomena</h2>
+    </ion-label>
+  <ion-item>
+    <ion-textarea></ion-textarea>
+  </ion-item>
+
     </div>
     
-    <h1>Broj putnika</h1>
-    <div class="select-container">
-      <h2>Broj odraslih putnika (stariji od 15 godina) </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
-    </select>
-
-    <h2>Broj putnika 3 - 14 godina </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
-    </select>
-
-    <h2>Broj putnika 0 - 2 godine </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
-    </select>
-    </div>
-    
-    <ion-button expand="block" (click)="navInfo()">Sljedeći korak</ion-button>
+    <ion-button expand="block" (click)="navPotvrda()">Potvrda narudžbe i naplata</ion-button>
   </div>
 
   <ion-footer>

@@ -16,6 +16,14 @@ const routes: Routes = [
   {
     path: 'scanner',
     loadChildren: () => import('./pages/scanner/scanner.module').then( m => m.ScannerPageModule)
+  },
+  {
+    path: 'info',
+    loadChildren: () => import('./pages/info/info.module').then( m => m.InfoPageModule)
+  },
+  {
+    path: 'potvrda',
+    loadChildren: () => import('./pages/potvrda/potvrda.module').then( m => m.PotvrdaPageModule)
   }
 ];
 
