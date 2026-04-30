@@ -1,0 +1,27 @@
+<ion-content [fullscreen]="true">
+  <div class="conteinar" *ngFor="let day of days">
+    <h1>{{ day | date:'dd.MM.yyyy' }} - {{ day | date:'EEEE':'':'hr' }}</h1>
+
+  <h2>Vožnje</h2>
+
+  <div class="tabela">
+    
+  <div class="vrijeme">
+    <h3>Početak</h3>
+    <p *ngFor="let time of times">{{ time }}</p>
+  </div>
+  <div class="mjesto">
+  <h3>Riva pakoštane</h3>
+  <div class="amount">
+    <p *ngFor="let time of times">
+      {{
+        racunService.getPassengersByDateAndTime(day, time)
+      }}
+    </p>
+  </div>
+  </div>
+
+  </div>
+  
+  </div>
+</ion-content>

@@ -1,0 +1,26 @@
+.tabela {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100%;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+h1 {
+    text-transform: uppercase;
+}
+
+.mjesto {
+    text-align: center;
+    padding: 1em;
+}
+
+.amount {
+    background-color: #0d408e;
+    color: #fff;
+
+}

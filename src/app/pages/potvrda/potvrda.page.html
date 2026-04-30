@@ -15,7 +15,7 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'list'}">Izdavanje karte i računa</a>
+  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Izdavanje karte i računa</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
@@ -30,7 +30,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>Riva pakoštane</p>
+        <p>{{data?.polaznaTocka}}</p>
       </ion-item>
 
       <ion-label>
@@ -39,7 +39,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>09:00:00</p>
+        <p>{{data?.vrijeme}}</p>
       </ion-item>
 
       <ion-label>
@@ -48,7 +48,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>01.01.2026</p>
+        <p>{{ data?.datum | date:'dd.MM.yyyy' }}</p>
       </ion-item>
 
       <ion-label>
@@ -57,7 +57,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>0</p>
+        <p>{{ totalPassengers }}</p>
       </ion-item>
 
       <ion-label>
@@ -75,7 +75,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>Ana</p>
+        <p>{{data?.ime}}</p>
       </ion-item>
 
       <ion-label>
@@ -84,7 +84,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>Anić</p>
+        <p>{{data?.prezime}}</p>
       </ion-item>
 
       <ion-label>
@@ -93,7 +93,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>+385 123 456 789</p>
+        <p>{{data?.telefon}}</p>
       </ion-item>
 
       <ion-label>
@@ -102,7 +102,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>test@test.com</p>
+        <p>{{data?.email}}</p>
       </ion-item>
 
       <ion-label>
@@ -111,12 +111,11 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ea quo repudiandae qui exercitationem nam minima molestiae magni similique! Id officia eum nihil architecto explicabo aliquid ut harum accusantium sequi ad.
-        Earum dolorem repudiandae cumque culpa ad veniam atque minus, aspernatur quod similique dolore repellat quis molestiae, autem quam, officia et odit nesciunt nostrum? Eius, blanditiis beatae? Officiis ratione consequuntur ullam.</p>
+        <p>{{data?.poruka}}</p>
       </ion-item>
     </div>
 
-       <ion-button expand="block" >Naplata</ion-button>
+       <ion-button expand="block" (click)="onPay()">Naplata</ion-button>
     </div>
   <ion-footer>
   <div class="footer-container">

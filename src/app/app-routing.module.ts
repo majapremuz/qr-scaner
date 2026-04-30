@@ -24,6 +24,10 @@ const routes: Routes = [
   {
     path: 'potvrda',
     loadChildren: () => import('./pages/potvrda/potvrda.module').then( m => m.PotvrdaPageModule)
+  },
+  {
+    path: 'kapetan',
+    loadChildren: () => import('./pages/kapetan/kapetan.module').then( m => m.KapetanPageModule)
   }
 ];
 

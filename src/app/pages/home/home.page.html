@@ -15,7 +15,7 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'list'}">Izdavanje karte i računa</a>
+  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Izdavanje karte i računa</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
@@ -24,8 +24,8 @@
     <h1>Polazna točka</h1>
 
     <div class="select-container">
-      <select name="polanost" id="">
-        <option value="">Riva pakoštane</option>
+      <select name="polanost" id="" [(ngModel)]="polaznaTocka">
+        <option value="Riva pakoštane">Riva pakoštane</option>
       </select>
     </div>
 
@@ -34,7 +34,7 @@
 <div class="select-container">
   <h2>Datum vožnje</h2>
   <ion-item button (click)="isDateModalOpen = true">
-      {{ selectedDate ? (selectedDate | date:'yyyy-MM-dd') : '' }}
+      {{ datum ? (datum | date:'yyyy-MM-dd') : '' }}
   </ion-item>
 
       <ion-modal [isOpen]="isDateModalOpen" (didDismiss)="isDateModalOpen = false" class="calendar">
@@ -58,24 +58,18 @@
     <h1>Broj putnika</h1>
     <div class="select-container">
       <h2>Broj odraslih putnika (stariji od 15 godina) </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
+    <select [(ngModel)]="odrasli">
+      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
     </select>
 
     <h2>Broj putnika 3 - 14 godina </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
+    <select [(ngModel)]="djeca">
+      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
     </select>
 
     <h2>Broj putnika 0 - 2 godine </h2>
-    <select name="" id="">
-      <option value="">1</option>
-      <option value="">2</option>
-      <option value="">3</option>
+    <select [(ngModel)]="bebe">
+      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
     </select>
     </div>
     

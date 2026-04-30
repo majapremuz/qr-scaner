@@ -1,28 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
+import { RačunService } from 'src/app/services/račun.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class HomePage implements OnInit {
   currentPage: string = 'home';
   menuOpen = false;
-  selectedDate: string = '';
+  datum: string = '';
+  polaznaTocka: string = 'Riva pakoštane';
+  odrasli: number = 0;
+  djeca: number = 0;
+  bebe: number = 0;
   isDateModalOpen = false;
 
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private računService: RačunService
   ) {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
@@ -60,24 +67,56 @@ maxDate = new Date(new Date().setDate(new Date().getDate() + 30))
   .split('T')[0];
 
 onDateChange(event: any) {
-  this.selectedDate = event.detail.value;
+  this.datum = event.detail.value;
   this.isDateModalOpen = false;
 }
 
   navHome() {
-    this.router.navigate(['/home']);
+    this.računService.setData({
+    polaznaTocka: this.polaznaTocka,
+    datum: this.datum,
+    odrasli: this.odrasli,
+    djeca: this.djeca,
+    bebe: this.bebe
+  });
+  this.menuOpen = false;
+  this.router.navigate(['/home']);
   }
 
   navInfo() {
+    const newData = {
+    polaznaTocka: this.polaznaTocka,
+    datum: this.datum,
+    odrasli: this.odrasli,
+    djeca: this.djeca,
+    bebe: this.bebe
+  };
+
+  console.log('PAGE 1 DATA:', newData);
+
+  this.računService.setData(newData);
+    this.menuOpen = false;
     this.router.navigate(['/info']);
   }
 
   navPotvrda() {
+    const newData = {
+    polaznaTocka: this.polaznaTocka,
+    datum: this.datum,
+    odrasli: this.odrasli,
+    djeca: this.djeca,
+    bebe: this.bebe
+  };
+
+  console.log('PAGE 1 DATA:', newData);
+
+    this.računService.setData(newData);
+    this.menuOpen = false;
     this.router.navigate(['/potvrda']);
   }
 
   navIzdavanje() {
-    this.router.navigate(['/izdavanje']);
+    this.router.navigate(['/kapetan']);
   }
 
   navScanner() {

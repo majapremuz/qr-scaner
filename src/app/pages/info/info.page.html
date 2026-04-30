@@ -15,7 +15,7 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'list'}">Izdavanje karte i računa</a>
+  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Izdavanje karte i računa</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
@@ -24,29 +24,109 @@
     <h1>Slobodni termini na izabrani dan</h1>
       
     <div class="select-container">
-      <ion-radio-group>
-        <ion-item class="date" lines="none">
-      <ion-radio slot="start"></ion-radio>
+      <ion-radio-group [(ngModel)]="vrijeme">
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="09:00:00"></ion-radio>
       <ion-label>
         <h2> <b>09:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
       </ion-label>
       </ion-item>
-      </ion-radio-group>
       
-      <ion-radio-group>
       <ion-item class="date" lines="none">
-      <ion-radio slot="start"></ion-radio>
+      <ion-radio slot="start" value="10:00:00"></ion-radio>
       <ion-label>
       <h2><b>10:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
       </ion-label>
       </ion-item>
-      </ion-radio-group>
 
-      <ion-radio-group>
       <ion-item class="date" lines="none">
-      <ion-radio slot="start"></ion-radio>
+      <ion-radio slot="start" value="11:00:00"></ion-radio>
       <ion-label>
       <h2><b>11:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="12:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>12:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="13:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>13:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="14:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>14:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="15:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>15:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="16:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>16:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="17:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>17:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="18:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>18:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="19:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>19:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="20:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>20:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="21:00:00"></ion-radio>
+      <ion-label>
+      <h2><b>21:00:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="21:40:00"></ion-radio>
+      <ion-label>
+      <h2><b>21:40:00</b>-Dnevna-cijena: <b>0 €</b></h2>
+      </ion-label>
+      </ion-item>
+
+      <ion-item class="date" lines="none">
+      <ion-radio slot="start" value="22:25:00"></ion-radio>
+      <ion-label>
+      <h2><b>22:25:00</b>-Dnevna-cijena: <b>0 €</b></h2>
       </ion-label>
       </ion-item>
       </ion-radio-group>
@@ -61,7 +141,7 @@
       </h2>
     </ion-label>
   <ion-item>
-    <ion-input></ion-input>
+    <ion-input [(ngModel)]="ime"></ion-input>
   </ion-item>
 
   <ion-label>
@@ -70,28 +150,28 @@
       </h2>
     </ion-label>
   <ion-item>
-    <ion-input></ion-input>
+    <ion-input [(ngModel)]="prezime"></ion-input>
   </ion-item>
 
   <ion-label>
       <h2>Telefon/mobitel</h2>
     </ion-label>
   <ion-item>
-    <ion-input></ion-input>
+    <ion-input [(ngModel)]="telefon"></ion-input>
   </ion-item>
 
   <ion-label>
       <h2>E-mail</h2>
     </ion-label>
   <ion-item>
-    <ion-input></ion-input>
+    <ion-input [(ngModel)]="email"></ion-input>
   </ion-item>
 
   <ion-label>
       <h2>Poruka/napomena</h2>
     </ion-label>
   <ion-item>
-    <ion-textarea></ion-textarea>
+    <ion-textarea [(ngModel)]="poruka"></ion-textarea>
   </ion-item>
 
     </div>

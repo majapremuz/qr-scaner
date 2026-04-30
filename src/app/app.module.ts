@@ -17,6 +17,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { App } from '@capacitor/app';
 
+import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
+
+
 @NgModule({
   declarations: [],
   imports: [
@@ -34,7 +37,7 @@ import { App } from '@capacitor/app';
       }
     })
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy } , BluetoothSerial],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
