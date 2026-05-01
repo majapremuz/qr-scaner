@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { RačunService } from 'src/app/services/račun.service';
 
 @Component({
@@ -11,6 +12,8 @@ import { RačunService } from 'src/app/services/račun.service';
   imports: [IonicModule, CommonModule]
 })
 export class KapetanPage implements OnInit {
+  currentPage: string = 'kapetan';
+  menuOpen = false;
   days: string[] = [];
   times: string[] = [
   '09:00:00',
@@ -32,12 +35,18 @@ export class KapetanPage implements OnInit {
 
 
   constructor(
+    private router: Router,
     public racunService: RačunService
   ) { }
 
   ngOnInit() {
+    this.menuOpen = false;
     this.generateNextDays();
   }
+
+  toggleMenu() {
+  this.menuOpen = !this.menuOpen;
+}
   
   generateNextDays() {
   const today = new Date();
@@ -50,5 +59,26 @@ export class KapetanPage implements OnInit {
     String(d.getDate()).padStart(2, '0');
   });
 }
+
+navHome() {
+    this.router.navigate(['/home']);
+  }
+
+  navInfo() {
+    this.router.navigate(['/info']);
+  }
+
+  navPotvrda() {
+    this.router.navigate(['/potvrda']);
+  }
+
+  navIzdavanje() {
+    this.router.navigate(['/kapetan']);
+  }
+
+  navScanner() {
+    this.router.navigate(['/scanner']);
+  }
+
 
 }

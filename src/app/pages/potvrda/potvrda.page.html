@@ -15,12 +15,20 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Izdavanje karte i računa</a>
+  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
 <ion-content [fullscreen]="true">
   <div class="container">
+
+    <ion-select [(ngModel)]="selectedPrinter" (ionChange)="savePrinter()">
+      <ion-label>Odaberi printer</ion-label>
+      <ion-select-option *ngFor="let d of devices" [value]="d.address">
+        {{ d.name }}
+      </ion-select-option>
+    </ion-select>
+
     <h1>Podaci o narudžbi i naručitelju</h1>
 
     <div class="select-container">
@@ -66,7 +74,7 @@
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>0 €</p>
+        <p>{{data?.cijena}} €</p>
       </ion-item>
 
       <ion-label>

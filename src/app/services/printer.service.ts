@@ -4,47 +4,84 @@ import * as QRCode from 'qrcode';
 
 @Injectable({ providedIn: 'root' })
 export class PrinterService {
-
   constructor(private bluetooth: BluetoothSerial) {}
 
-  connect(address: string): Promise<any> {
-    return this.bluetooth.connect(address).toPromise();
-  }
-
-  print(text: string): Promise<any> {
-    return this.bluetooth.write(text);
-  }
-
   async printReceipt(address: string, data: any) {
-    const receipt = this.generateReceipt(data);
 
-    await this.bluetooth.connect(address).toPromise();
+  const receipt = this.generateReceipt(data);
 
-    return this.bluetooth.write(receipt);
-  }
+  await new Promise((resolve, reject) => {
+    this.bluetooth.connect(address).subscribe(resolve, reject);
+  });
 
-  generateReceipt(data: any): string {
-    return `
-====================
-     RAČUN
-====================
+  await this.bluetooth.write(receipt);
 
-From: ${data.polaznaTocka}
-Date: ${data.datum}
-Time: ${data.vrijeme}
+  await this.bluetooth.disconnect();
+}
 
-Adults: ${data.odrasli}
-Children: ${data.djeca}
-Babies: ${data.bebe}
+generateReceipt(data: any): string {
+  const ESC = '\x1B';
+  const GS = '\x1D';
 
-Name: ${data.ime} ${data.prezime}
-Phone: ${data.telefon}
+  let text = '';
 
-QR: ${QRCode.toDataURL(data.qrCode)}
+  text += ESC + 't' + String.fromCharCode(18);
 
-====================
-HVALA
-====================
-`;
-  }
+  text += '====================\n';
+  text += '       RAČUN\n';
+  text += '====================\n\n';
+
+  text += `Od: ${data.polaznaTocka}\n`;
+  text += `Datum: ${data.datum}\n`;
+  text += `Vrijeme: ${data.vrijeme}\n\n`;
+
+  text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}}\n\n`;
+
+  text += `Osoba: ${data.ime} ${data.prezime}\n`;
+  text += `Telefon: ${data.telefon}\n\n`;
+
+  text += '--------------------\n';
+
+  // QR COMMAND (ESC/POS)
+  text += this.generateESCPosQR(data.qrCode);
+
+  text += '\n\nHVALA\n\n';
+
+  return text;
+}
+
+generateESCPosQR(data: string): string {
+  const GS = '\x1D';
+
+  let qr = '';
+
+  // Model
+  qr += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
+
+  // Size
+  qr += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
+
+  // Error correction
+  qr += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 48);
+
+  // Store data
+  const length = data.length + 3;
+  const pL = length % 256;
+  const pH = Math.floor(length / 256);
+
+  qr += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + data;
+
+  // Print QR
+  qr += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
+
+  return qr;
+}
+
+  setPrinter(address: string) {
+  localStorage.setItem('printer', address);
+}
+
+getPrinter(): string {
+  return localStorage.getItem('printer') || '';
+}
 }

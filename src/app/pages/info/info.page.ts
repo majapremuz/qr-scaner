@@ -18,11 +18,30 @@ export class InfoPage implements OnInit {
   menuOpen = false;
 
   vrijeme: string = '';
+  cijena: string = '';
   ime: string = '';
   prezime: string = '';
   telefon: string = '';
   email: string = '';
   poruka: string = '';
+
+  timesWithPrices = [
+  { time: '09:00:00', price: 10 },
+  { time: '10:00:00', price: 10 },
+  { time: '11:00:00', price: 12 },
+  { time: '12:00:00', price: 12 },
+  { time: '13:00:00', price: 15 },
+  { time: '14:00:00', price: 15 },
+  { time: '15:00:00', price: 15 },
+  { time: '16:00:00', price: 15 },
+  { time: '17:00:00', price: 12 },
+  { time: '18:00:00', price: 12 },
+  { time: '19:00:00', price: 10 },
+  { time: '20:00:00', price: 10 },
+  { time: '21:00:00', price: 10 },
+  { time: '21:40:00', price: 10 },
+  { time: '22:25:00', price: 10 }
+];
 
   constructor(
     private router: Router,
@@ -38,6 +57,11 @@ export class InfoPage implements OnInit {
   this.menuOpen = !this.menuOpen;
 }
 
+get selectedPrice(): number {
+  const selected = this.timesWithPrices.find(t => t.time === this.vrijeme);
+  return selected ? selected.price : 0;
+}
+
   navHome() {
     this.router.navigate(['/home']);
   }
@@ -49,6 +73,7 @@ export class InfoPage implements OnInit {
   navPotvrda() {
     const newData = {
     vrijeme: this.vrijeme,
+    cijena: this.selectedPrice,
     ime: this.ime,
     prezime: this.prezime,
     telefon: this.telefon,

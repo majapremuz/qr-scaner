@@ -14,6 +14,7 @@ export class RačunService {
     djeca: 0,
     bebe: 0,
     vrijeme: '',
+    cijena: '',
     ime: '',
     prezime: '',
     telefon: '',
