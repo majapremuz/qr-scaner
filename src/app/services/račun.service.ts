@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -6,9 +7,13 @@ import { Injectable } from '@angular/core';
 export class RačunService {
 
   bookings: any[] = [];
+  productTimesCache: any[] = [];
+
+  constructor(private http: HttpClient) { }
 
   data: any = {
     polaznaTocka: '',
+    vrstaVoznje: '',
     datum: '',
     odrasli: 0,
     djeca: 0,
@@ -19,7 +24,8 @@ export class RačunService {
     prezime: '',
     telefon: '',
     email: '',
-    poruka: ''
+    poruka: '',
+    paymentType: '' 
   };
 
   setData(newData: any) {
@@ -29,6 +35,13 @@ export class RačunService {
   getData() {
     return this.data;
   }
+
+  getSchedule(date: string) {
+  return this.http.post<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/schedule.php',
+    { date }
+  );
+}
 
   clear() {
     this.data = {};
@@ -40,6 +53,18 @@ export class RačunService {
     vrijeme: booking.vrijeme,
     total: Number(booking.total)
   });
+}
+
+getPrices() {
+  return this.http.get<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/prices.php'
+  );
+}
+
+getProductTimes() {
+  return this.http.get<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/producttimes.php'
+  );
 }
 
 getPassengersByDateAndTime(date: string, time: string): number {

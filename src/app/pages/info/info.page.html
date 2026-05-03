@@ -15,7 +15,8 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
+  <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
+  <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Pregled rezervacija</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
@@ -25,16 +26,19 @@
       
     <div class="select-container">
       <ion-radio-group [(ngModel)]="vrijeme">
-      <ion-item *ngFor="let t of timesWithPrices" lines="none" class="radio-container">
-        <ion-radio slot="start" [value]="t.time"></ion-radio>
-        <ion-label>
-          <h2 class="price">
-            <b>{{ t.time }}</b> - Dnevna cijena:
-            <b>{{ t.price }} €</b>
-          </h2>
-        </ion-label>
-      </ion-item>
-    </ion-radio-group>
+        <ion-item *ngFor="let t of productTimes" lines="none" class="radio-container">
+          
+          <ion-radio slot="start" [value]="t.title"></ion-radio>
+
+          <ion-label>
+            <h2 class="price">
+              <b>{{ t.title.length === 2 ? (t.title + ':00') : t.title }}</b> - Cijena:
+              <b>{{ getPriceForTime(t.title) }} €</b>
+            </h2>
+          </ion-label>
+
+        </ion-item>
+      </ion-radio-group>
     </div>
 
   <h1>Osobni podaci</h1>

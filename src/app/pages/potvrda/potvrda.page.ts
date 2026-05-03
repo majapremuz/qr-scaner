@@ -25,6 +25,7 @@ export class PotvrdaPage implements OnInit {
   data: any;
   devices: any[] = [];
   selectedPrinter: string = '';
+  paymentType: string = 'gotovina';
 
   constructor(
     private router: Router,
@@ -97,18 +98,32 @@ async generateQR(text: string) {
 async onPay() {
   const data = this.računService.getData();
 
-  const ticketId = uuidv4(); // unique QR content
-  data.qrCode = ticketId;
+  this.računService.setData({
+   paymentType: this.paymentType
+  });
 
-  await this.saveToServer(data);
+  const response = await this.createOrder(data);
+
+  if (!response || response.response !== 'Success') {
+    console.error('Order failed', response);
+    return;
+  }
+
+  // ✅ CORRECT VALUES FROM API
+  data.qrCode = response.code;
+  data.ticketNumber = response.order;
+
+  console.log('QR CODE:', data.qrCode);
+  console.log('TICKET NUMBER:', data.ticketNumber);
 
   const printer = this.selectedPrinter;
 
-  this.printerService.printReceipt(printer, data)
-    .then(() => console.log('Printed'))
-    .catch(err => console.error(err));
+  await this.printerService.printReceipt(printer, data);
 
-  // Save booking
+  await this.saveToServer(data);
+
+  console.log('Printed');
+
   this.računService.addBooking({
     datum: this.formatDate(data.datum),
     vrijeme: data.vrijeme,
@@ -116,37 +131,111 @@ async onPay() {
   });
 }
 
+async createOrder(data: any): Promise<any> {
+  try {
+    const payload = {
+      startdate: this.formatDate(data.datum),
+      starttime: this.mapTimeToId(data.vrijeme),
+
+      payment: data.cijena,
+      numberkids: Number(data.djeca),
+      numberteens: 0,
+      numberadults: Number(data.odrasli),
+
+      totalprice: data.cijena,
+
+      status: 1,
+      payment_type: this.paymentType
+    };
+
+    console.log('ORDER PAYLOAD:', payload);
+
+    const res: any = await firstValueFrom(
+      this.http.post(
+        'https://tickets.semisubmarine-pakostane.com/api/orders.php',
+        payload
+      )
+    );
+
+    console.log('RAW RESPONSE:', res);
+
+    const response = Array.isArray(res) ? res[0] : res;
+
+    return response;
+
+  } catch (err) {
+    console.error('Order error:', err);
+    return null;
+  }
+}
+
+mapTimeToId(time: string): number {
+  const productTimes = this.računService.productTimesCache;
+
+  if (!productTimes || productTimes.length === 0) {
+    console.warn('ProductTimes not loaded yet!');
+    return 0;
+  }
+
+  const match = productTimes.find(t =>
+    time.includes(t.title)
+  );
+
+  return match ? match.id : 0;
+}
+
 formatDate(date: string): string {
   return date.split('T')[0]; // "2026-04-30"
 }
 
 async saveToServer(data: any) {
+  const payload = {
+    date: this.formatDate(data.datum)
+  };
+
   try {
-    await firstValueFrom(
-      this.http.post('https://your-api/save-ticket.php', data)
+    const res = await firstValueFrom(
+      this.http.post(
+        'https://tickets.semisubmarine-pakostane.com/api/schedule.php',
+        payload
+      )
     );
+
+    console.log('Schedule updated:', res);
+    console.log('Sending payload:', payload);
+
   } catch (err) {
     console.error('Save error', err);
   }
 }
 
   navHome() {
+    this.menuOpen = false;
     this.router.navigate(['/home']);
   }
 
   navInfo() {
+    this.menuOpen = false;
     this.router.navigate(['/info']);
   }
 
   navPotvrda() {
+    this.menuOpen = false;
     this.router.navigate(['/potvrda']);
   }
 
-  navIzdavanje() {
+  navList() {
+    this.menuOpen = false;
     this.router.navigate(['/kapetan']);
   }
 
+  navChange() {
+    this.menuOpen = false;
+    this.router.navigate(['/promjena-rezervacije']);
+  }
+
   navScanner() {
+    this.menuOpen = false;
     this.router.navigate(['/scanner']);
   }
 

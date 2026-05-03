@@ -15,7 +15,8 @@
   <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
   <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
   <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
-  <a (click)="navIzdavanje()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
+  <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
+  <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Promjena rezervacije</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
 </div>
 
@@ -24,8 +25,20 @@
     <h1>Polazna točka</h1>
 
     <div class="select-container">
-      <select name="polanost" id="" [(ngModel)]="polaznaTocka">
-        <option value="Riva pakoštane">Riva pakoštane</option>
+      <select [(ngModel)]="polaznaTocka">
+        <option *ngFor="let loc of locations" [ngValue]="loc">
+          {{ loc }}
+        </option>
+      </select>
+    </div>
+
+    <h1>Vrsta vožnje</h1>
+
+    <div class="select-container">
+      <select [(ngModel)]="vrstaVoznje">
+        <option *ngFor="let type of types" [ngValue]="type.title">
+          {{ type.title }}
+        </option>
       </select>
     </div>
 

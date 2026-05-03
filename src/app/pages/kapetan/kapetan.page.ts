@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { RačunService } from 'src/app/services/račun.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-kapetan',
@@ -15,68 +17,84 @@ export class KapetanPage implements OnInit {
   currentPage: string = 'kapetan';
   menuOpen = false;
   days: string[] = [];
-  times: string[] = [
-  '09:00:00',
-  '10:00:00',
-  '11:00:00',
-  '12:00:00',
-  '13:00:00',
-  '14:00:00',
-  '15:00:00',
-  '16:00:00',
-  '17:00:00',
-  '18:00:00',
-  '19:00:00',
-  '20:00:00',
-  '21:00:00',
-  '21:40:00',
-  '22:25:00'
-];
-
+  times: string[] = [];
+  scheduleData: { [key: string]: any[] } = {};
+  daySchedules: any[] = [];
 
   constructor(
     private router: Router,
-    public racunService: RačunService
+    public racunService: RačunService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
-    this.menuOpen = false;
-    this.generateNextDays();
-  }
+  const days = this.generateNextDays();
+  console.log(days);
+
+  forkJoin(
+    days.map(day => this.racunService.getSchedule(day))
+  ).subscribe(results => {
+
+    const mapped = results.map((res, index) => ({
+      day: days[index],
+      rows: (res ?? [])
+        .slice()
+        .sort((a: any, b: any) => a.time.localeCompare(b.time))
+    }));
+
+    setTimeout(() => {
+      this.daySchedules = mapped;
+      this.cdr.detectChanges();
+      console.log('Day schedules:', this.daySchedules);
+    });
+
+  });
+}
 
   toggleMenu() {
   this.menuOpen = !this.menuOpen;
 }
   
-  generateNextDays() {
+  generateNextDays(): string[] {
   const today = new Date();
 
-  this.days = Array.from({ length: 3 }, (_, i) => {
+  return Array.from({ length: 3 }, (_, i) => {
     const d = new Date();
     d.setDate(today.getDate() + i);
+
     return d.getFullYear() + '-' +
-    String(d.getMonth() + 1).padStart(2, '0') + '-' +
-    String(d.getDate()).padStart(2, '0');
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
   });
 }
 
 navHome() {
+    this.menuOpen = false;
     this.router.navigate(['/home']);
   }
 
   navInfo() {
+    this.menuOpen = false;
     this.router.navigate(['/info']);
   }
 
   navPotvrda() {
+    this.menuOpen = false;
     this.router.navigate(['/potvrda']);
   }
 
-  navIzdavanje() {
+  navList() {
+    this.menuOpen = false;
     this.router.navigate(['/kapetan']);
   }
 
+  navChange() {
+    this.menuOpen = false;
+    this.router.navigate(['/promjena-rezervacije']);
+  }
+
   navScanner() {
+    this.menuOpen = false;
     this.router.navigate(['/scanner']);
   }
 

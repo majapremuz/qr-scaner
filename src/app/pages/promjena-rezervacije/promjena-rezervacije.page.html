@@ -21,13 +21,7 @@
 </div>
 
 <ion-content>
-  <h1 class="title">Skener karata</h1>
-
-  <ion-loading
-  [isOpen]="loading"
-  message="Provjera karte..."
-  spinner="crescent">
-</ion-loading>
+  <h1 class="title">Promjena rezervacije</h1>
 
   <ion-list>
     <ion-item *ngFor="let barcode of barcodes">
@@ -38,41 +32,20 @@
 
   <div class="ticket-container">
     <img *ngIf="!scanned" class="qr-border" src="assets/qr_border.png" alt="qr border">
-    <div *ngIf="userData" class="qr-data" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
-          <h2>Ticket Info</h2>
-        <section>
-          <p><strong>Datum:</strong> {{ userData.startdate }}</p>
-          <p><strong>Vrijeme:</strong> {{ userData.starttime }}</p>
-          <p><strong>Ime:</strong> {{ userData.name }} {{ userData.surname }}</p>
-          <p><strong>E-mail:</strong> {{ userData.mail }}</p>
-          <p><strong>Telefon/Mobiel:</strong> {{ userData.phone }}</p>
-          <p><strong>Poruka:</strong> {{ userData.message }}</p>
-          <p><strong>Djece:</strong> {{ userData.numberkids }}</p>
-          <p><strong>Mlađi:</strong> {{ userData.numberteens }}</p>
-          <p><strong>Odrasli:</strong> {{ userData.numberadults }}</p>
-        </section>
+        <div 
+      *ngIf="status === 'success'" 
+      class="qr-data"
+      [ngStyle]="{ 'background-color': bgColor, 'color': textColor }"
+    >
+      <h2>{{ message }}</h2>
     </div>
 
-    <div *ngIf="reservedData && bgColor === 'yellow'" class="qr-reserved" [ngStyle]="{ 'background-color': bgColor }">
-     <h2>Cijena karte: {{ reservedData.price }},00 € </h2>
-
-     <section>
-          <p><strong>Datum:</strong> {{ reservedData.startdate }}</p>
-          <p><strong>Vrijeme:</strong> {{ reservedData.starttime }}</p>
-          <p><strong>Ime:</strong> {{ reservedData.name }} {{ reservedData.surname }}</p>
-          <p><strong>E-mail:</strong> {{ reservedData.mail }}</p>
-          <p><strong>Telefon/Mobiel:</strong> {{ reservedData.phone }}</p>
-          <p><strong>Poruka:</strong> {{ reservedData.message }}</p>
-          <p><strong>Djece:</strong> {{ reservedData.numberkids }}</p>
-          <p><strong>Mlađi:</strong> {{ reservedData.numberteens }}</p>
-          <p><strong>Odrasli:</strong> {{ reservedData.numberadults }}</p>
-        </section>
-
-   </div>
-  
-    <div *ngIf="!userData && bgColor === 'red'" class="qr-error" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
-      <h2>Karta neispravna</h2>
-      <p>Ova karta je već prodana.</p>
+    <div 
+      *ngIf="status === 'error'" 
+      class="qr-error"
+      [ngStyle]="{ 'background-color': bgColor, 'color': textColor }"
+    >
+      <h2>{{ message }}</h2>
     </div>
 
   </div>

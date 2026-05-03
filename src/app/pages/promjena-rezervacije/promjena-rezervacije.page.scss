@@ -6,6 +6,10 @@ ion-header {
   background-color: #222;
 }
 
+ion-toolbar {
+  padding: 1rem;
+}
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -57,54 +61,59 @@ a {
     padding: 0.5rem 1rem;
 }
 
-.tabela {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    height: 100%;
-}
-
-h1, h2 {
-    text-align: center;
-}
-
-h3 {
-  font-size: 1.1rem;
-  padding: 0 0.3rem;
-}
-
 h1 {
-    text-transform: uppercase;
+    font-size: 1.3rem;
+    text-indent: 1rem;
+    font-weight: 900;
 }
 
-.mjesto,
-.ukupno {
-    text-align: center;
+h2 {
+    font-size: 1.1rem;
+    text-indent: 1rem;
 }
 
-.vrijeme {
-  margin-top: 1rem;
+.title {
+  text-transform: uppercase;
   text-align: center;
+  font-size: 1.6rem;
+  margin-top: 1rem;
 }
 
-.ukupno {
-  margin-top: 1.3rem;
+select {
+    width: 90%;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    background-color: #fff;
+    border: 1px solid #fff;
 }
 
-.pine {
-    background-color: #155e06;
-    color: #fff;
+.select-container {
+  background-color: #e6e6e6;
+  padding: 2em;
 }
 
-.riva {
-  background-color: #0d408e;
-  color: #fff;
+.ticket-container img {
+  width: 100%;
+  height: 100%;
 }
 
-.total {
-  background-color: #555555;
-  color: #fff;
+.qr-data {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+}
+
+.qr-reserved {
+  padding: 1rem;
+}
+
+.scanBtn {
+  --background: #2a8a07;
+  --color: white;
+  width: 80%;
+  height: 10%;
+  font-size: 1.5rem;
+  margin: 0 2rem;
 }
 
 ion-footer {
@@ -136,4 +145,3 @@ ion-footer {
   height: 1.875rem;
   flex-shrink: 0;
 }
-

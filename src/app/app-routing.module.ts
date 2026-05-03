@@ -28,6 +28,10 @@ const routes: Routes = [
   {
     path: 'kapetan',
     loadChildren: () => import('./pages/kapetan/kapetan.module').then( m => m.KapetanPageModule)
+  },
+  {
+    path: 'promjena-rezervacije',
+    loadChildren: () => import('./pages/promjena-rezervacije/promjena-rezervacije.module').then( m => m.PromjenaRezervacijePageModule)
   }
 ];
 

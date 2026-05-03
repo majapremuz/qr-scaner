@@ -7,6 +7,9 @@ import { filter } from 'rxjs/operators';
 import { ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { RačunService } from 'src/app/services/račun.service';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-home',
@@ -24,12 +27,17 @@ export class HomePage implements OnInit {
   djeca: number = 0;
   bebe: number = 0;
   isDateModalOpen = false;
+  locations: string[] = [];
+  prices: any[] = [];
+  types: any[] = [];
+  vrstaVoznje: any = null;
 
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    private računService: RačunService
+    private računService: RačunService,
+    private http: HttpClient
   ) {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
@@ -48,6 +56,8 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadLocations();
+    this.loadTypes();
   }
 
   toggleMenu() {
@@ -71,13 +81,69 @@ onDateChange(event: any) {
   this.isDateModalOpen = false;
 }
 
+async loadLocations() {
+  try {
+    const res: any = await firstValueFrom(
+      this.http.get('https://tickets.semisubmarine-pakostane.com/api/prices.php')
+    );
+
+    this.prices = res;
+
+    // Extract unique locations
+    const locationsSet = new Set<string>();
+
+    res.forEach((item: any) => {
+      if (item.type === 1) {
+        locationsSet.add('Riva');
+      } else if (item.type === 2) {
+        locationsSet.add('Pine Beach');
+      }
+    });
+
+    this.locations = Array.from(locationsSet);
+    this.cdr.detectChanges(); 
+
+    // Set default
+    if (this.locations.length > 0) {
+      this.polaznaTocka = this.locations[0];
+    }
+
+    console.log('Locations:', this.locations);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async loadTypes() {
+  try {
+    const res: any = await firstValueFrom(
+      this.http.get('https://tickets.semisubmarine-pakostane.com/api/producttypes.php')
+    );
+
+    this.types = res;
+    this.cdr.detectChanges();
+
+    // default selection
+    if (this.types.length > 0) {
+      this.vrstaVoznje = this.types[0].id;
+    }
+
+    console.log('Types:', this.types);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
   navHome() {
     this.računService.setData({
     polaznaTocka: this.polaznaTocka,
     datum: this.datum,
     odrasli: this.odrasli,
     djeca: this.djeca,
-    bebe: this.bebe
+    bebe: this.bebe,
+    vrstaVoznje: this.vrstaVoznje
   });
   this.menuOpen = false;
   this.router.navigate(['/home']);
@@ -89,7 +155,8 @@ onDateChange(event: any) {
     datum: this.datum,
     odrasli: this.odrasli,
     djeca: this.djeca,
-    bebe: this.bebe
+    bebe: this.bebe,
+    vrstaVoznje: this.vrstaVoznje
   };
 
   console.log('PAGE 1 DATA:', newData);
@@ -115,11 +182,18 @@ onDateChange(event: any) {
     this.router.navigate(['/potvrda']);
   }
 
-  navIzdavanje() {
+  navList() {
+    this.menuOpen = false;
     this.router.navigate(['/kapetan']);
   }
 
+  navChange() {
+    this.menuOpen = false;
+    this.router.navigate(['/promjena-rezervacije']);
+  }
+
   navScanner() {
+    this.menuOpen = false;
     this.router.navigate(['/scanner']);
   }
 

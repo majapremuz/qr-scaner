@@ -28,17 +28,23 @@ generateReceipt(data: any): string {
   text += ESC + 't' + String.fromCharCode(18);
 
   text += '====================\n';
-  text += '       RAČUN\n';
+  text += '       RACUN\n';
   text += '====================\n\n';
 
-  text += `Od: ${data.polaznaTocka}\n`;
-  text += `Datum: ${data.datum}\n`;
-  text += `Vrijeme: ${data.vrijeme}\n\n`;
+  text += `Redni broj: ${data.ticketNumber}\n`;
 
-  text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}}\n\n`;
+  text += `Mjesto polaska: ${data.polaznaTocka}\n`;
+  text += `Vrsta voznje: ${data.vrstaVoznje}\n\n`;
+  text += `Datum: ${this.formatDate(data.datum)}\n`;
+  text += `Vrijeme: ${data.vrijeme}:00\n\n`;
+
+  text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}\n\n`;
 
   text += `Osoba: ${data.ime} ${data.prezime}\n`;
   text += `Telefon: ${data.telefon}\n\n`;
+
+  text += `Cijena: ${data.cijena} €\n\n`;
+  text += `Placanje: ${data.paymentType}\n\n`;
 
   text += '--------------------\n';
 
@@ -75,6 +81,16 @@ generateESCPosQR(data: string): string {
   qr += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
 
   return qr;
+}
+
+formatDate(date: string): string {
+  if (!date) return '';
+
+  if (date.includes('T')) {
+    return date.split('T')[0];
+  }
+
+  return date;
 }
 
   setPrinter(address: string) {

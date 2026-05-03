@@ -1,39 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
-  selector: 'app-scanner',
-  templateUrl: 'scanner.page.html',
-  styleUrls: ['scanner.page.scss'],
+  selector: 'app-promjena-rezervacije',
+  templateUrl: 'promjena-rezervacije.page.html',
+  styleUrls: ['promjena-rezervacije.page.scss'],
   standalone: true,
-  imports: [ CommonModule, IonicModule]
+  imports: [ CommonModule, IonicModule, FormsModule ]
 })
-export class ScannerPage implements OnInit {
+export class PromjenaRezervacijePage implements OnInit {
   currentPage: string = 'scanner';
   menuOpen = false;
   isSupported = false;
   barcodes: Barcode[] = [];
   userData: any = null;
-  apiUrl = 'https://tickets.semisubmarine-pakostane.com/api/code.php';
+  apiUrl = 'https://tickets.semisubmarine-pakostane.com/api/changereservation.php';
   bgColor = 'white';
   textColor = 'white';
   reservedData: any = null;
   scanned = false;
   private isModuleInstalled = false;
-  loading = false;
+  paymentType: string = 'gotovina';
+  status: 'idle' | 'success' | 'error' = 'idle';
+  message: string = '';
 
   constructor(
     private alertController: AlertController, 
     private http: HttpClient,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -61,10 +62,43 @@ toggleMenu() {
   this.menuOpen = !this.menuOpen;
 }
 
+async changeReservation(qrCode: string) {
+  try {
+    const payload = {
+      qrCode: qrCode,
+      payment_type: this.paymentType
+    };
+
+    const rawResponse: any = await firstValueFrom(
+      this.http.post(this.apiUrl, payload)
+    );
+
+    const response = Array.isArray(rawResponse)
+      ? rawResponse[0]
+      : rawResponse;
+
+    console.log('Change response:', response);
+
+    this.scanned = true;
+
+    if (response?.response === 'Success') {
+      this.status = 'success';
+      this.message = 'Rezervacija uspješno promijenjena';
+      this.updateBackgroundColor('valid');
+    } else {
+      this.status = 'error';
+      this.message = 'Greška pri promjeni rezervacije';
+      this.updateBackgroundColor('sold');
+    }
+
+  } catch (error) {
+    console.error('Change error', error);
+    this.presentAlert('Server greška');
+  }
+}
+
   async scan(): Promise<void> {
     console.log('Scanning...');
-    this.loading = true;
-
     const granted = await this.requestPermissions();
     if (!granted) {
       this.presentAlert('Molim vas da odobrite pristup kameri.');
@@ -75,46 +109,13 @@ toggleMenu() {
       const { barcodes } = await BarcodeScanner.scan();
       if (barcodes.length > 0) {
         const scannedCode = barcodes[0].rawValue; 
-        this.validateQRCode(scannedCode);
+        this.changeReservation(scannedCode);
       }
     } catch (error) {
       console.error('Error scanning barcode', error);
       this.presentAlert('Error scanning barcode.');
-    } finally {
-      this.loading = false;
     }
   }
-
-  async validateQRCode(qrCode: string) {
-  try {
-    const rawResponse: any = await firstValueFrom(
-      this.http.post(this.apiUrl, { qrCode: qrCode })
-    );
-
-    console.log('Raw API response:', rawResponse);
-
-    const response = Array.isArray(rawResponse)
-     ? rawResponse[0] 
-     : rawResponse;
-    
-    if (response?.response === 'Success') {
-    this.userData = response;
-    this.reservedData = null;
-    this.updateBackgroundColor('valid');
-  } else {
-    this.userData = null;
-    this.reservedData = null;
-    this.updateBackgroundColor('sold');
-  }
-  } catch (error) {
-    console.error('Error validating QR code', error);
-    this.userData = null;
-    this.reservedData = null;
-    this.presentAlert('Failed to validate QR code.');
-  }
-}
-
-
 
   updateBackgroundColor(status: string) {
     switch (status) {
