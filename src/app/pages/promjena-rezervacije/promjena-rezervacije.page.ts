@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-promjena-rezervacije',
@@ -34,7 +35,8 @@ export class PromjenaRezervacijePage implements OnInit {
   constructor(
     private alertController: AlertController, 
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -90,7 +92,7 @@ async changeReservation(qrCode: string) {
       this.message = 'Greška pri promjeni rezervacije';
       this.updateBackgroundColor('sold');
     }
-
+   this.cdr.detectChanges();
   } catch (error) {
     console.error('Change error', error);
     this.presentAlert('Server greška');
@@ -109,7 +111,7 @@ async changeReservation(qrCode: string) {
       const { barcodes } = await BarcodeScanner.scan();
       if (barcodes.length > 0) {
         const scannedCode = barcodes[0].rawValue; 
-        this.changeReservation(scannedCode);
+        await this.changeReservation(scannedCode);
       }
     } catch (error) {
       console.error('Error scanning barcode', error);

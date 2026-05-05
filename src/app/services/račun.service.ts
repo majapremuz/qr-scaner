@@ -13,7 +13,6 @@ export class RačunService {
 
   data: any = {
     polaznaTocka: '',
-    vrstaVoznje: '',
     datum: '',
     odrasli: 0,
     djeca: 0,
@@ -21,11 +20,8 @@ export class RačunService {
     vrijeme: '',
     cijena: '',
     ime: '',
-    prezime: '',
-    telefon: '',
-    email: '',
-    poruka: '',
-    paymentType: '' 
+    paymentType: '',
+    orderMode: '' 
   };
 
   setData(newData: any) {
@@ -64,6 +60,12 @@ getPrices() {
 getProductTimes() {
   return this.http.get<any[]>(
     'https://tickets.semisubmarine-pakostane.com/api/producttimes.php'
+  );
+}
+
+getProductTypes() {
+  return this.http.get<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/producttypes.php'
   );
 }
 

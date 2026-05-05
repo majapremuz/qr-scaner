@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -6,7 +6,6 @@ import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-scanner',
@@ -27,7 +26,6 @@ export class ScannerPage implements OnInit {
   reservedData: any = null;
   scanned = false;
   private isModuleInstalled = false;
-  loading = false;
 
   constructor(
     private alertController: AlertController, 
@@ -63,7 +61,6 @@ toggleMenu() {
 
   async scan(): Promise<void> {
     console.log('Scanning...');
-    this.loading = true;
 
     const granted = await this.requestPermissions();
     if (!granted) {
@@ -75,13 +72,11 @@ toggleMenu() {
       const { barcodes } = await BarcodeScanner.scan();
       if (barcodes.length > 0) {
         const scannedCode = barcodes[0].rawValue; 
-        this.validateQRCode(scannedCode);
+        await this.validateQRCode(scannedCode);
       }
     } catch (error) {
       console.error('Error scanning barcode', error);
       this.presentAlert('Error scanning barcode.');
-    } finally {
-      this.loading = false;
     }
   }
 
@@ -106,6 +101,7 @@ toggleMenu() {
     this.reservedData = null;
     this.updateBackgroundColor('sold');
   }
+  this.cdr.detectChanges();
   } catch (error) {
     console.error('Error validating QR code', error);
     this.userData = null;

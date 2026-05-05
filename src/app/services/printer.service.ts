@@ -28,22 +28,19 @@ generateReceipt(data: any): string {
   text += ESC + 't' + String.fromCharCode(18);
 
   text += '====================\n';
-  text += '       RACUN\n';
+  text += '          KARTA\n\n';
   text += '====================\n\n';
 
   text += `Redni broj: ${data.ticketNumber}\n`;
 
-  text += `Mjesto polaska: ${data.polaznaTocka}\n`;
-  text += `Vrsta voznje: ${data.vrstaVoznje}\n\n`;
   text += `Datum: ${this.formatDate(data.datum)}\n`;
   text += `Vrijeme: ${data.vrijeme}:00\n\n`;
 
   text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}\n\n`;
 
-  text += `Osoba: ${data.ime} ${data.prezime}\n`;
-  text += `Telefon: ${data.telefon}\n\n`;
+  text += `Osoba: ${data.ime}\n`;
 
-  text += `Cijena: ${data.cijena} €\n\n`;
+  text += `Cijena: ${data.cijena} EUR\n\n`;
   text += `Placanje: ${data.paymentType}\n\n`;
 
   text += '--------------------\n';
@@ -52,6 +49,10 @@ generateReceipt(data: any): string {
   text += this.generateESCPosQR(data.qrCode);
 
   text += '\n\nHVALA\n\n';
+
+  text += '--------------------\n';
+
+  text += `www.semisubmarine-pakostane.com\n`;
 
   return text;
 }

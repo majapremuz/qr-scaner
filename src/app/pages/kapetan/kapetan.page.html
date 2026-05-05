@@ -33,46 +33,22 @@
   <h2>Vožnje</h2>
 
   <div class="tabela">
+  <!-- HEADER -->
+  <div class="header">Početak</div>
+  <div class="header">Ukupno</div>
+  <div class="header">Riva pakoštane</div>
+  <div class="header">Pine beach</div>
 
-    <!-- TIMES -->
-    <div class="vrijeme">
-      <h3>Početak</h3>
-      <p *ngFor="let row of d.rows">{{ row.time }}</p>
-    </div>
-
-    <!-- TOTAL -->
-    <div class="ukupno">
-      <h3>Ukupno</h3>
-      <div class="total">
-        <p *ngFor="let row of d.rows">
-        {{ row.total }}
-      </p>
-      </div>
-    </div>
-
-    <!-- RIVA -->
-    <div class="mjesto">
-      <h3>Riva pakoštane</h3>
-      <div class="riva">
-        <p *ngFor="let row of d.rows">
-        {{ row.riva }}
-      </p>
-      </div>
-    </div>
-
-    <!-- PINE -->
-    <div class="mjesto">
-      <h3>Pine beach</h3>
-      <div class="pine">
-        <p *ngFor="let row of d.rows">
-        {{ row.pine_beach }}
-      </p>
-      </div>
-    </div>
-
-  </div>
-</div>
+  <!-- ROWS -->
+  <ng-container *ngFor="let row of d.rows">
+    <div class="time">{{ row.time }}</div>
+    <div class="total">{{ row.total }}</div>
+    <div class="riva">{{ row.riva }}</div>
+    <div class="pine">{{ row.pine_beach }}</div>
   </ng-container>
+  </div>
+  </div>
+</ng-container>
   
   <ion-footer>
   <div class="footer-container">

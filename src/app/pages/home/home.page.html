@@ -22,26 +22,6 @@
 
 <ion-content [fullscreen]="true">
   <div class="container">
-    <h1>Polazna točka</h1>
-
-    <div class="select-container">
-      <select [(ngModel)]="polaznaTocka">
-        <option *ngFor="let loc of locations" [ngValue]="loc">
-          {{ loc }}
-        </option>
-      </select>
-    </div>
-
-    <h1>Vrsta vožnje</h1>
-
-    <div class="select-container">
-      <select [(ngModel)]="vrstaVoznje">
-        <option *ngFor="let type of types" [ngValue]="type.title">
-          {{ type.title }}
-        </option>
-      </select>
-    </div>
-
     <h1>Izaberite datum</h1>
 
 <div class="select-container">
@@ -71,19 +51,19 @@
     <h1>Broj putnika</h1>
     <div class="select-container">
       <h2>Broj odraslih putnika (stariji od 15 godina) </h2>
-    <select [(ngModel)]="odrasli">
-      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
-    </select>
+    <ion-select [(ngModel)]="odrasli">
+      <ion-select-option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</ion-select-option>
+    </ion-select>
 
     <h2>Broj putnika 3 - 14 godina </h2>
-    <select [(ngModel)]="djeca">
-      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
-    </select>
+    <ion-select [(ngModel)]="djeca">
+      <ion-select-option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</ion-select-option>
+    </ion-select>
 
     <h2>Broj putnika 0 - 2 godine </h2>
-    <select [(ngModel)]="bebe">
-      <option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</option>
-    </select>
+    <ion-select [(ngModel)]="bebe">
+      <ion-select-option *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12]" [value]="n">{{n}}</ion-select-option>
+    </ion-select>
     </div>
     
     <ion-button expand="block" (click)="navInfo()">Sljedeći korak</ion-button>

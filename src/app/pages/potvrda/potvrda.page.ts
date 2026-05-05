@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,6 @@ import { PrinterService } from 'src/app/services/printer.service';
 import * as QRCode from 'qrcode';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
-import { v4 as uuidv4 } from 'uuid'; 
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
@@ -33,7 +32,8 @@ export class PotvrdaPage implements OnInit {
     private printerService: PrinterService,
     private bluetooth: BluetoothSerial,
     private androidPermissions: AndroidPermissions,
-    private http: HttpClient
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit() {
@@ -89,6 +89,7 @@ get totalPassengers(): number {
 
 savePrinter() {
   this.printerService.setPrinter(this.selectedPrinter);
+  this.cdr.detectChanges();
 }
 
 async generateQR(text: string) {
@@ -97,10 +98,6 @@ async generateQR(text: string) {
 
 async onPay() {
   const data = this.računService.getData();
-
-  this.računService.setData({
-   paymentType: this.paymentType
-  });
 
   const response = await this.createOrder(data);
 
@@ -133,19 +130,22 @@ async onPay() {
 
 async createOrder(data: any): Promise<any> {
   try {
+    const total = data.cijena;
+    const isPaid = data.orderMode === 'karta';
+
     const payload = {
       startdate: this.formatDate(data.datum),
       starttime: this.mapTimeToId(data.vrijeme),
 
-      payment: data.cijena,
+      payment: isPaid ? total : 0,
       numberkids: Number(data.djeca),
       numberteens: 0,
       numberadults: Number(data.odrasli),
 
-      totalprice: data.cijena,
+      totalprice: total,
 
-      status: 1,
-      payment_type: this.paymentType
+      status: isPaid ? 2 : 1,
+      payment_type: isPaid ? data.paymentType : null
     };
 
     console.log('ORDER PAYLOAD:', payload);

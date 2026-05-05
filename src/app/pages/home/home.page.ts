@@ -8,7 +8,6 @@ import { ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { RačunService } from 'src/app/services/račun.service';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -42,23 +41,23 @@ export class HomePage implements OnInit {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      if (event.url.includes('one-way-ticket')) {
-        this.currentPage = 'one-way-ticket';
-      } else if (event.url.includes('return-ticket')) {
-        this.currentPage = 'return-ticket';
-      } else if (event.url.includes('list')) {
-        this.currentPage = 'list';
+      if (event.url.includes('home')) {
+        this.currentPage = 'home';
+      } else if (event.url.includes('info')) {
+        this.currentPage = 'info';
+      } else if (event.url.includes('potvrda')) {
+        this.currentPage = 'potvrda';
+      } else if (event.url.includes('kapetan')) {
+        this.currentPage = 'kapetan';
+      } else if (event.url.includes('pomjena-rezervacije')) {
+        this.currentPage = 'promjena-rezervacije';
       } else if (event.url.includes('scanner')) {
         this.currentPage = 'scanner';
       }
-      this.cdr.detectChanges();
     });
   }
 
-  ngOnInit() {
-    this.loadLocations();
-    this.loadTypes();
-  }
+  ngOnInit() {}
 
   toggleMenu() {
   this.menuOpen = !this.menuOpen;
@@ -79,61 +78,6 @@ maxDate = new Date(new Date().setDate(new Date().getDate() + 30))
 onDateChange(event: any) {
   this.datum = event.detail.value;
   this.isDateModalOpen = false;
-}
-
-async loadLocations() {
-  try {
-    const res: any = await firstValueFrom(
-      this.http.get('https://tickets.semisubmarine-pakostane.com/api/prices.php')
-    );
-
-    this.prices = res;
-
-    // Extract unique locations
-    const locationsSet = new Set<string>();
-
-    res.forEach((item: any) => {
-      if (item.type === 1) {
-        locationsSet.add('Riva');
-      } else if (item.type === 2) {
-        locationsSet.add('Pine Beach');
-      }
-    });
-
-    this.locations = Array.from(locationsSet);
-    this.cdr.detectChanges(); 
-
-    // Set default
-    if (this.locations.length > 0) {
-      this.polaznaTocka = this.locations[0];
-    }
-
-    console.log('Locations:', this.locations);
-
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async loadTypes() {
-  try {
-    const res: any = await firstValueFrom(
-      this.http.get('https://tickets.semisubmarine-pakostane.com/api/producttypes.php')
-    );
-
-    this.types = res;
-    this.cdr.detectChanges();
-
-    // default selection
-    if (this.types.length > 0) {
-      this.vrstaVoznje = this.types[0].id;
-    }
-
-    console.log('Types:', this.types);
-
-  } catch (err) {
-    console.error(err);
-  }
 }
 
   navHome() {
@@ -168,7 +112,6 @@ async loadTypes() {
 
   navPotvrda() {
     const newData = {
-    polaznaTocka: this.polaznaTocka,
     datum: this.datum,
     odrasli: this.odrasli,
     djeca: this.djeca,

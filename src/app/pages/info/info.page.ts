@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
 import { RačunService } from 'src/app/services/račun.service';
 import { firstValueFrom } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
@@ -22,42 +21,69 @@ export class InfoPage implements OnInit {
   vrijeme: string = '';
   cijena: string = '';
   ime: string = '';
-  prezime: string = '';
-  telefon: string = '';
-  email: string = '';
-  poruka: string = '';
   prices: any[] = [];
   productTimes: any[] = [];
+  productTypes: any[] = [];
+  orderMode: 'karta' | 'rezervacija' = 'karta';
+  paymentType: 'gotovina' | 'kartica' | null = null;
 
   constructor(
     private router: Router,
-    private authService: AuthService,
     private računService: RačunService,
     private cdr: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {
-    console.log('PAGE 2 INIT DATA:', this.računService.getData());
-    this.loadPrices();
-    this.loadProductTimes();
-  }
+  async ngOnInit() {
+  console.log('PAGE 2 INIT DATA:', this.računService.getData());
+  await this.loadAllData();
+}
 
   toggleMenu() {
   this.menuOpen = !this.menuOpen;
 }
 
-async loadProductTimes() {
-  const res: any = await firstValueFrom(
-    this.računService.getProductTimes()
-  );
-  this.productTimes = res.sort((a: any, b: any) => {
-  return this.parseTime(a.title) - this.parseTime(b.title);
-  });
+async loadAllData() {
+  const [prices, times, types] = await Promise.all([
+    firstValueFrom(this.računService.getPrices()),
+    firstValueFrom(this.računService.getProductTimes()),
+    firstValueFrom(this.računService.getProductTypes())
+  ]);
+
+  this.prices = prices;
+  this.productTypes = types;
+
+  this.productTimes = times
+    .sort((a: any, b: any) => this.parseTime(a.title) - this.parseTime(b.title))
+    .map((t: any) => ({
+      ...t,
+      calculatedPrice: this.calculatePrice(t)
+    }));
+    this.računService.productTimesCache = times;
+  console.log('FINAL TIMES:', this.productTimes);
   this.cdr.detectChanges(); 
-  this.računService.productTimesCache = res;
-  console.log('Cached productTimes:', this.računService.productTimesCache);
 }
 
+calculatePrice(t: any): number {
+  if (!t.producttypes) return 0; 
+  const data = this.računService.getData();
+
+  const odrasli = Number(data.odrasli || 0);
+  const djeca = Number(data.djeca || 0);
+  const bebe = Number(data.bebe || 0);
+
+  const priceItem = this.prices.find(p => p.type === t.producttypes);
+
+  if (!priceItem) {
+    console.warn('No price match for:', t);
+    return 0;
+  }
+
+  return (
+    odrasli * priceItem.priceadult +
+    djeca * priceItem.priceteen +
+    bebe * priceItem.pricebaby
+  );
+}
 parseTime(time: string): number {
   // normalize: "9" → "09:00", "14" → "14:00"
   if (!time.includes(':')) {
@@ -68,60 +94,15 @@ parseTime(time: string): number {
   return hours * 60 + minutes; // total minutes
 }
 
-async loadPrices() {
-  try {
-    const res: any = await firstValueFrom(
-      this.računService.getPrices()
-    );
-
-    this.prices = res;
-    console.log('Prices:', this.prices);
-    this.cdr.detectChanges(); 
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-getPriceForTime(time: string): number {
-  const data = this.računService.getData();
-
-  const isRiva = data.polaznaTocka.includes('Riva');
-
-  // find productTime
-  const productTime = this.productTimes.find(t =>
-    time.includes(t.title)
-  );
-
-  if (!productTime) return 0;
-
-  const productType = productTime.producttypes;
-
-  // find matching price
-  const priceItem = this.prices.find(p => {
-    if (isRiva) {
-      return p.type === productType && p.title.includes('Riva');
-    } else {
-      return p.type === productType && p.title.includes('Pine');
-    }
-  });
-
-  if (!priceItem) return 0;
-
-  const odrasli = Number(data.odrasli || 0);
-  const djeca = Number(data.djeca || 0);
-  const bebe = Number(data.bebe || 0);
-
-  return (
-    odrasli * priceItem.priceadult +
-    djeca * priceItem.priceteen +
-    bebe * priceItem.pricebaby
-  );
+getTypeTitle(typeId: number): string {
+  const type = this.productTypes.find(t => t.id === typeId);
+  return type ? type.title : '';
 }
 
 get selectedPrice(): number {
   const data = this.računService.getData();
 
-  const isRiva = data.polaznaTocka.includes('Riva');
+  const isRiva = true;
 
   const priceItem = this.prices.find(p =>
     isRiva ? p.type === 1 : p.type === 2
@@ -140,6 +121,11 @@ get selectedPrice(): number {
   );
 }
 
+getTypeName(typeId: number): string {
+  const type = this.productTypes.find(t => t.id === typeId);
+  return type ? type.title : '';
+}
+
   navHome() {
     this.menuOpen = false;
     this.router.navigate(['/home']);
@@ -155,10 +141,8 @@ get selectedPrice(): number {
     vrijeme: this.vrijeme,
     cijena: this.selectedPrice,
     ime: this.ime,
-    prezime: this.prezime,
-    telefon: this.telefon,
-    email: this.email,
-    poruka: this.poruka
+    paymentType: this.orderMode === 'karta' ? this.paymentType : 'rezervacija',
+    orderMode: this.orderMode
   };
 
   console.log('PAGE 2 SAVING:', newData);

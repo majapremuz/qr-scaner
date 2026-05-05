@@ -68,12 +68,17 @@ h2 {
     text-indent: 1rem;
 }
 
-select {
+.polazna {
+  background-color: #fff;
+  padding: 0.3rem;
+}
+
+ion-select {
     width: 90%;
-    padding: 0.5rem;
     margin-left: 1rem;
     background-color: #fff;
     border: 1px solid #fff;
+    text-indent: 1rem;
 }
 
 .select-container {
@@ -83,7 +88,7 @@ select {
 
 .calendar {
   --width: 90%;
-  --height: 400px;
+  --height: 350px;
   --border-radius: 12px;
 }
 

@@ -28,29 +28,11 @@
     <div class="select-container">
       <ion-label>
           <h2>
-            Polazna točka: 
-          </h2>
-        </ion-label>
-      <ion-item lines="none">
-        <p>{{data?.polaznaTocka}}</p>
-      </ion-item>
-
-      <ion-label>
-          <h2>
-            Vrsta vožnje: 
-          </h2>
-        </ion-label>
-      <ion-item lines="none">
-        <p>{{data?.vrstaVoznje}}</p>
-      </ion-item>
-
-      <ion-label>
-          <h2>
             Vrijeme polaska: 
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>{{data?.vrijeme}}</p>
+        <p>{{data?.vrijeme}}:00</p>
       </ion-item>
 
       <ion-label>
@@ -91,59 +73,24 @@
 
       <ion-label>
           <h2>
-            Prezime: 
+            Način plaćanja: 
           </h2>
         </ion-label>
       <ion-item lines="none">
-        <p>{{data?.prezime}}</p>
+        <p>{{data?.paymentType}}</p>
       </ion-item>
-
-      <ion-label>
-          <h2>
-            Telefon/mobitel: 
-          </h2>
-        </ion-label>
-      <ion-item lines="none">
-        <p>{{data?.telefon}}</p>
-      </ion-item>
-
-      <ion-label>
-          <h2>
-            E-mail: 
-          </h2>
-        </ion-label>
-      <ion-item lines="none">
-        <p>{{data?.email}}</p>
-      </ion-item>
-
-      <ion-label>
-          <h2>
-            Poruka/napomena: 
-          </h2>
-        </ion-label>
-      <ion-item lines="none">
-        <p>{{data?.poruka}}</p>
-      </ion-item>
-    </div>
-
-    <h1>Način plaćanja</h1>
-    <div class="select-container">
-      <select [(ngModel)]="paymentType">
-      <option value="gotovina">Gotovina</option>
-      <option value="kartica">Kartica</option>
-      </select>
     </div>
 
     <h1>Odaberi printer</h1>
     <div class="select-container">
-      <select [(ngModel)]="selectedPrinter" (ionChange)="savePrinter()">
-      <option *ngFor="let d of devices" [value]="d.address">
-        {{ d.name }}
-      </option>
-    </select>
+      <ion-select [(ngModel)]="selectedPrinter" (ionChange)="savePrinter()">
+        <ion-select-option *ngFor="let d of devices" [value]="d.address">
+          {{ d.name }}
+        </ion-select-option>
+      </ion-select>
     </div>
 
-       <ion-button expand="block" (click)="onPay()">Naplata</ion-button>
+       <ion-button expand="block" (click)="onPay()">Izrada karte</ion-button>
     </div>
   <ion-footer>
   <div class="footer-container">

@@ -27,13 +27,15 @@
     <div class="select-container">
       <ion-radio-group [(ngModel)]="vrijeme">
         <ion-item *ngFor="let t of productTimes" lines="none" class="radio-container">
-          
+  
           <ion-radio slot="start" [value]="t.title"></ion-radio>
 
           <ion-label>
             <h2 class="price">
-              <b>{{ t.title.length === 2 ? (t.title + ':00') : t.title }}</b> - Cijena:
-              <b>{{ getPriceForTime(t.title) }} €</b>
+              <b>{{ t.title.length === 2 ? (t.title + ':00') : t.title }}</b>
+              - {{ getTypeTitle(t.producttypes) }}
+              - Cijena:
+              <b>{{ t.calculatedPrice }} €</b>
             </h2>
           </ion-label>
 
@@ -41,7 +43,7 @@
       </ion-radio-group>
     </div>
 
-  <h1>Osobni podaci</h1>
+  <h1>Kupnja/rezervacija</h1>
 
 <div class="select-container">
   <ion-label>
@@ -54,38 +56,32 @@
   </ion-item>
 
   <ion-label>
-      <h2>
-        Prezime
-      </h2>
-    </ion-label>
+  <h2>Vrsta narudžbe</h2>
+  </ion-label>
+
   <ion-item>
-    <ion-input [(ngModel)]="prezime"></ion-input>
+    <ion-select [(ngModel)]="orderMode">
+      <ion-select-option value="karta">Kupnja karte</ion-select-option>
+      <ion-select-option value="rezervacija">Rezervacija</ion-select-option>
+    </ion-select>
   </ion-item>
 
-  <ion-label>
-      <h2>Telefon/mobitel</h2>
-    </ion-label>
-  <ion-item>
-    <ion-input [(ngModel)]="telefon"></ion-input>
-  </ion-item>
+  <div *ngIf="orderMode === 'karta'">
+      <ion-label>
+        <h2>Način plaćanja</h2>
+      </ion-label>
 
-  <ion-label>
-      <h2>E-mail</h2>
-    </ion-label>
-  <ion-item>
-    <ion-input [(ngModel)]="email"></ion-input>
-  </ion-item>
-
-  <ion-label>
-      <h2>Poruka/napomena</h2>
-    </ion-label>
-  <ion-item>
-    <ion-textarea [(ngModel)]="poruka"></ion-textarea>
-  </ion-item>
+      <ion-item>
+        <ion-select [(ngModel)]="paymentType">
+          <ion-select-option value="cash">Gotovina</ion-select-option>
+          <ion-select-option value="card">Kartica</ion-select-option>
+        </ion-select>
+      </ion-item>
 
     </div>
-    
-    <ion-button expand="block" (click)="navPotvrda()">Potvrda narudžbe i naplata</ion-button>
+</div>
+        
+    <ion-button expand="block" (click)="navPotvrda()">Potvrda</ion-button>
   </div>
 
   <ion-footer>

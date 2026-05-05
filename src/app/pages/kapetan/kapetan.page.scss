@@ -78,32 +78,41 @@ h1 {
     text-transform: uppercase;
 }
 
-.mjesto,
-.ukupno {
-    text-align: center;
-}
-
-.vrijeme {
-  margin-top: 1rem;
+.tabela {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   text-align: center;
+  align-items: center;
+  row-gap: 5px;
 }
 
-.ukupno {
-  margin-top: 1.3rem;
+.header {
+  font-weight: bold;
+  padding: 0.5rem;
 }
 
-.pine {
-    background-color: #155e06;
-    color: #fff;
+/* cells */
+.tabela div {
+  padding: 0.4rem;
 }
 
+/* colors */
 .riva {
   background-color: #0d408e;
   color: #fff;
 }
 
+.pine {
+  background-color: #155e06;
+  color: #fff;
+}
+
+.time {
+  background-color: #fefe2b;
+}
+
 .total {
-  background-color: #555555;
+  background-color: #555;
   color: #fff;
 }
 
