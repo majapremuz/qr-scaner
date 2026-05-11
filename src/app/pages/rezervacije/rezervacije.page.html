@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <img src="assets/logo.png" alt="logo image" class="logo">
+
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleMenu()">
+        <ion-icon name="menu" class="menu-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- dropdown menu -->
+<div class="menu" [class.open]="menuOpen">
+  <a (click)="navHome()" [ngClass]="{'active-nav': currentPage === 'home'}">Određivanje datuma i putnika</a>
+  <a (click)="navInfo()" [ngClass]="{'active-nav': currentPage === 'info'}">Izbor termina i podaci naručitelja</a>
+  <a (click)="navPotvrda()" [ngClass]="{'active-nav': currentPage === 'potvrda'}">Potvrda narudžbe</a>
+  <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
+  <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Promjena rezervacije</a>
+  <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
+</div>
+
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+
+    <h1>Rezervacije za {{ time }}</h1>
+
+    <!-- ✅ EMPTY STATE -->
+    <div *ngIf="!orders || orders.length === 0" class="info">
+      <h2>Nema rezervacija za taj termin.</h2>
+    </div>
+
+    <!-- ✅ LIST -->
+    <div *ngIf="orders.length > 0">
+      <div *ngFor="let o of orders" class="order-card">
+
+      <div class="info">
+        <h2>Redni broj:</h2>
+        <div class="info-container">
+          {{ o.id }}
+        </div>
+
+        <h2>Broj putnika:</h2>
+        <div class="info-container">
+          {{ (o.numberadults || 0) + (o.numberkids || 0) }}
+        </div>
+
+        <h2>Cijena:</h2>
+        <div class="info-container">
+          {{ o.price || 0 }} €
+        </div>
+
+        <h2>Status:</h2>
+        <div class="info-container">
+          {{ o.payment_type ? 'Plaćeno' : 'Rezervacija' }}
+        </div>
+
+        <div class="actions">
+        <ion-button (click)="reprintTicket(o)">
+          Ispiši ponovno
+        </ion-button>
+
+        <ion-button color="danger" (click)="cancelReservation(o)">
+          Otkaži
+        </ion-button>
+      </div>
+
+      </div>
+
+    </div>
+    </div>
+    
+  </div>
+</ion-content>

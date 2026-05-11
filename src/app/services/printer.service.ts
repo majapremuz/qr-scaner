@@ -38,8 +38,6 @@ generateReceipt(data: any): string {
 
   text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}\n\n`;
 
-  text += `Osoba: ${data.ime}\n`;
-
   text += `Cijena: ${data.cijena} EUR\n\n`;
   text += `Placanje: ${data.paymentType}\n\n`;
 

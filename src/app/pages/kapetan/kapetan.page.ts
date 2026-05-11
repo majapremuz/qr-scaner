@@ -27,29 +27,38 @@ export class KapetanPage implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {
-  const days = this.generateNextDays();
-  console.log(days);
+  ngOnInit() {}
 
-  forkJoin(
-    days.map(day => this.racunService.getSchedule(day))
-  ).subscribe(results => {
+  ionViewWillEnter() {
+    this.loadSchedules();
+  }
 
-    const mapped = results.map((res, index) => ({
-      day: days[index],
-      rows: (res ?? [])
-        .slice()
-        .sort((a: any, b: any) => a.time.localeCompare(b.time))
-    }));
+  loadSchedules() {
 
-    setTimeout(() => {
+    const days = this.generateNextDays();
+
+    forkJoin(
+      days.map(day => this.racunService.getSchedule(day))
+    ).subscribe(results => {
+
+      const mapped = results.map((res, index) => ({
+        day: days[index],
+        rows: (res ?? [])
+          .slice()
+          .sort((a: any, b: any) =>
+            a.time.localeCompare(b.time)
+          )
+      }));
+
       this.daySchedules = mapped;
+
       this.cdr.detectChanges();
+
       console.log('Day schedules:', this.daySchedules);
+
     });
 
-  });
-}
+  }
 
   toggleMenu() {
   this.menuOpen = !this.menuOpen;
@@ -65,6 +74,12 @@ export class KapetanPage implements OnInit {
     return d.getFullYear() + '-' +
       String(d.getMonth() + 1).padStart(2, '0') + '-' +
       String(d.getDate()).padStart(2, '0');
+  });
+}
+
+openOrders(date: string, time: string) {
+  this.router.navigate(['/rezervacije'], {
+    queryParams: { date, time }
   });
 }
 

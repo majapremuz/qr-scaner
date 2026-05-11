@@ -75,4 +75,33 @@ console.log("Bookings:", this.bookings)
     .filter(b => b.datum === date && b.vrijeme === time)
     .reduce((sum, b) => sum + (Number(b.total) || 0), 0) || 0;
 }
+
+getOrdersByDateAndTime(date: string, time: string) {
+  const timeId = this.mapTimeToId(time);
+  
+
+  return this.http.post<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/ordersbydate.php',
+    {
+      date: date,
+      starttime: timeId
+    }
+  );
+}
+
+mapTimeToId(time: string): number {
+  const productTimes = this.productTimesCache;
+
+  if (!productTimes || productTimes.length === 0) {
+    console.warn('ProductTimes not loaded yet!');
+    return 0;
+  }
+
+  const match = productTimes.find(t =>
+    time.includes(t.title)
+  );
+
+  return match ? match.id : 0;
+}
+
 }

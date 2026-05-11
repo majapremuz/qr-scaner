@@ -32,6 +32,10 @@ const routes: Routes = [
   {
     path: 'promjena-rezervacije',
     loadChildren: () => import('./pages/promjena-rezervacije/promjena-rezervacije.module').then( m => m.PromjenaRezervacijePageModule)
+  },
+  {
+    path: 'rezervacije',
+    loadChildren: () => import('./pages/rezervacije/rezervacije.module').then( m => m.RezervacijePageModule)
   }
 ];
 

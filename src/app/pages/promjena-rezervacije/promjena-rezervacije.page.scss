@@ -116,33 +116,3 @@ select {
   font-size: 1.5rem;
   margin: 0 2rem;
 }
-
-ion-footer {
-  background-color: #096b9c;
-  margin-top: 3em;
-  padding-top: 3em;
-  padding-bottom: 0.5em;
-  color: white;
-  text-align: center;
-  font-family: 'Segoe UI', sans-serif;
-  line-height: 1.8;
-}
-
-.cards-div {
-  background-color: #111;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  overflow-x: auto;        
-  overflow-y: hidden;
-  gap: 12px;               
-  padding: 1rem;
-  margin: 1.5rem 0;
-  border-radius: 10px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.cards {
-  height: 1.875rem;
-  flex-shrink: 0;
-}

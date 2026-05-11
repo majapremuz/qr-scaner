@@ -80,6 +80,28 @@ onDateChange(event: any) {
   this.isDateModalOpen = false;
 }
 
+get totalPassengers(): number {
+  return this.odrasli + this.djeca + this.bebe;
+}
+
+getAllowedNumbers(current: 'odrasli' | 'djeca' | 'bebe'): number[] {
+  const max = 12;
+
+  let others = 0;
+
+  if (current === 'odrasli') {
+    others = this.djeca + this.bebe;
+  } else if (current === 'djeca') {
+    others = this.odrasli + this.bebe;
+  } else {
+    others = this.odrasli + this.djeca;
+  }
+
+  const remaining = max - others;
+
+  return Array.from({ length: remaining + 1 }, (_, i) => i);
+}
+
   navHome() {
     this.računService.setData({
     polaznaTocka: this.polaznaTocka,
