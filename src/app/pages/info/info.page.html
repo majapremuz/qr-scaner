@@ -26,9 +26,24 @@
       
     <div class="select-container">
       <ion-radio-group [(ngModel)]="vrijeme">
-        <ion-item *ngFor="let t of productTimes" lines="none" class="radio-container">
-  
-          <ion-radio slot="start" [value]="t.title"></ion-radio>
+        <ion-item
+          *ngFor="let t of productTimes"
+          lines="none"
+          class="radio-container"
+          [class.disabled-time]="
+          isPastTime(t.title) ||
+          t.availableSeats <= 0
+          "
+        >
+
+          <ion-radio
+            slot="start"
+            [value]="t.title"
+            [disabled]="
+              isPastTime(t.title) ||
+              t.availableSeats <= 0
+            ">
+          </ion-radio>
 
           <ion-label>
             <h2 class="price">
@@ -36,6 +51,13 @@
               - {{ getTypeTitle(t.producttypes) }}
               - Cijena:
               <b>{{ t.calculatedPrice }} €</b>
+              <span *ngIf="t.availableSeats > 0">
+                slobodno: {{ t.availableSeats }}
+              </span>
+
+              <span *ngIf="t.availableSeats <= 0">
+                POPUNJENO
+              </span>
             </h2>
           </ion-label>
 
@@ -56,10 +78,19 @@
   </ion-item>
 
   <ion-label>
+      <h2>
+        E-mail
+      </h2>
+    </ion-label>
+  <ion-item>
+    <ion-input [(ngModel)]="email"></ion-input>
+  </ion-item>
+
+  <ion-label>
   <h2>Vrsta narudžbe</h2>
   </ion-label>
 
-  <ion-item>
+  <ion-item class="pay-select">
     <ion-select [(ngModel)]="orderMode">
       <ion-select-option value="karta">Kupnja karte</ion-select-option>
       <ion-select-option value="rezervacija">Rezervacija</ion-select-option>
@@ -71,8 +102,9 @@
         <h2>Način plaćanja</h2>
       </ion-label>
 
-      <ion-item>
-        <ion-select [(ngModel)]="paymentType">
+      <ion-item class="pay-select">
+        <ion-select [(ngModel)]="paymentType" >
+          <ion-select-option value=""></ion-select-option>
           <ion-select-option value="cash">Gotovina</ion-select-option>
           <ion-select-option value="card">Kartica</ion-select-option>
         </ion-select>

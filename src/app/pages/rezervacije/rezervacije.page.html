@@ -41,6 +41,16 @@
           {{ o.id }}
         </div>
 
+        <h2>Ime:</h2>
+        <div class="info-container">
+          {{ o.name }}
+        </div>
+
+        <h2>E-mail:</h2>
+        <div class="info-container">
+          {{ o.mail }}
+        </div>
+
         <h2>Broj putnika:</h2>
         <div class="info-container">
           {{ (o.numberadults || 0) + (o.numberkids || 0) }}
@@ -60,6 +70,62 @@
         <ion-button (click)="reprintTicket(o)">
           Ispiši ponovno
         </ion-button>
+
+        <div #ticketPdf class="pdf-ticket">
+        <h1>====================</h1>
+        <h1>KARTA</h1>
+        <h1>====================</h1>
+
+        <h2>Redni broj: {{ selectedTicket.ticketNumber }}</h2>
+
+        <p>Datum: {{ formatDate(selectedTicket.datum) }}</p>
+        <p>Vrijeme: {{ selectedTicket.vrijeme }}:00</p>
+
+        <p>Naziv: {{ selectedTicket.ime }}</p>
+        <p>E-mail: {{ selectedTicket.email }}</p>
+        <p>Broj putnika: {{ totalPassengers }}</p>
+        
+        <p>Ukupno: {{ selectedTicket.cijena }} €</p>
+        <p>Plaćanje: {{ selectedTicket.paymentType }}</p>
+
+        <p>--------------------</p>
+        <img [src]="qrCodeImage" />
+        <p>HVALA</p>
+        <p>--------------------</p>
+        <p>www.semisubmarine-pakostane.com</p>
+      </div>
+
+
+        <ion-button
+      expand="block"
+      (click)="downloadPdf(o)"
+      class="PDF-button">
+
+      Preuzmi PDF
+
+    </ion-button>
+
+        <div class="email-box">
+
+      <ion-item>
+        <ion-input
+          [(ngModel)]="email"
+          type="email"
+          placeholder="Upiši email">
+        </ion-input>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        (click)="sendPdfEmail(o)"
+        class="PDF-button">
+
+        Pošalji mailom
+
+      </ion-button>
+
+    </div>
+
 
         <ion-button color="danger" (click)="cancelReservation(o)">
           Otkaži

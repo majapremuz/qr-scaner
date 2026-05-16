@@ -30,6 +30,7 @@ export class HomePage implements OnInit {
   prices: any[] = [];
   types: any[] = [];
   vrstaVoznje: any = null;
+  availableSeats: number = 12;
 
   constructor(
     private router: Router,
@@ -85,7 +86,8 @@ get totalPassengers(): number {
 }
 
 getAllowedNumbers(current: 'odrasli' | 'djeca' | 'bebe'): number[] {
-  const max = 12;
+
+  const max = this.availableSeats;
 
   let others = 0;
 
@@ -97,7 +99,7 @@ getAllowedNumbers(current: 'odrasli' | 'djeca' | 'bebe'): number[] {
     others = this.odrasli + this.djeca;
   }
 
-  const remaining = max - others;
+  const remaining = Math.max(0, max - others);
 
   return Array.from({ length: remaining + 1 }, (_, i) => i);
 }

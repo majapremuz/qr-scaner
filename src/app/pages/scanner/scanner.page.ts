@@ -95,10 +95,12 @@ toggleMenu() {
     if (response?.response === 'Success') {
     this.userData = response;
     this.reservedData = null;
+    this.scanned = true;
     this.updateBackgroundColor('valid');
   } else {
     this.userData = null;
     this.reservedData = null;
+    this.scanned = true;
     this.updateBackgroundColor('sold');
   }
   this.cdr.detectChanges();
@@ -106,6 +108,7 @@ toggleMenu() {
     console.error('Error validating QR code', error);
     this.userData = null;
     this.reservedData = null;
+    this.scanned = true;
     this.presentAlert('Failed to validate QR code.');
   }
 }

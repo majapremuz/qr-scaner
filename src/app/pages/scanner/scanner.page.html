@@ -34,6 +34,8 @@
     <div *ngIf="userData" class="qr-data" [ngStyle]="{ 'background-color': bgColor, 'color': textColor }">
           <h2>Informacije o narudžbi</h2>
         <section>
+          <p><strong>Ime:</strong> {{ userData.name }}</p>
+          <p><strong>E-mail:</strong> {{ userData.mail }}</p>
           <p><strong>Datum:</strong> {{ userData.startdate }}</p>
           <p><strong>Vrijeme:</strong> {{ userData.starttime }}</p>
           <p><strong>Djece:</strong> {{ userData.numberkids }}</p>
@@ -46,6 +48,8 @@
      <h2>Cijena karte: {{ reservedData.price }},00 € </h2>
 
      <section>
+          <p><strong>Ime:</strong> {{ reservedData.name }}</p>
+          <p><strong>E-mail:</strong> {{ reservedData.mail }}</p>
           <p><strong>Datum:</strong> {{ reservedData.startdate }}</p>
           <p><strong>Vrijeme:</strong> {{ reservedData.starttime }}</p>
           <p><strong>Djece:</strong> {{ reservedData.numberkids }}</p>

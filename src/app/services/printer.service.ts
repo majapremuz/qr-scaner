@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
-import * as QRCode from 'qrcode';
 
 @Injectable({ providedIn: 'root' })
 export class PrinterService {
@@ -14,7 +13,10 @@ export class PrinterService {
     this.bluetooth.connect(address).subscribe(resolve, reject);
   });
 
-  await this.bluetooth.write(receipt);
+  const encoder = new TextEncoder();
+  const buffer = encoder.encode(receipt);
+
+  await this.bluetooth.write(buffer);
 
   await this.bluetooth.disconnect();
 }
@@ -36,6 +38,8 @@ generateReceipt(data: any): string {
   text += `Datum: ${this.formatDate(data.datum)}\n`;
   text += `Vrijeme: ${data.vrijeme}:00\n\n`;
 
+  text += `Naziv: ${data.ime}\n`;
+  text += `E-mail: ${data.email}\n`;
   text += `Broj putnika: ${Number(data.odrasli) + Number(data.djeca) + Number(data.bebe)}\n\n`;
 
   text += `Cijena: ${data.cijena} EUR\n\n`;

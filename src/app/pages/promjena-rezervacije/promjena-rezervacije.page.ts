@@ -117,6 +117,7 @@ async changeReservation(qrCode: string) {
       console.error('Error scanning barcode', error);
       this.presentAlert('Error scanning barcode.');
     }
+    this.cdr.detectChanges();
   }
 
   updateBackgroundColor(status: string) {

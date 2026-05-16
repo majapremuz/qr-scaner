@@ -18,6 +18,7 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 import { App } from '@capacitor/app';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 
 @NgModule({
   declarations: [],
@@ -36,7 +37,12 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
       }
     })
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, BluetoothSerial, AndroidPermissions],
+  providers: [
+  { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+  BluetoothSerial,
+  AndroidPermissions,
+  EmailComposer
+],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

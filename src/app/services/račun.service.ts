@@ -20,6 +20,7 @@ export class RačunService {
     vrijeme: '',
     cijena: '',
     ime: '',
+    email: '',
     paymentType: '',
     orderMode: '' 
   };
@@ -60,6 +61,12 @@ getPrices() {
 getProductTimes() {
   return this.http.get<any[]>(
     'https://tickets.semisubmarine-pakostane.com/api/producttimes.php'
+  );
+}
+
+getSirenTimes() {
+  return this.http.get<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/sirentimes.php'
   );
 }
 

@@ -73,6 +73,15 @@
 
       <ion-label>
           <h2>
+            E-mail: 
+          </h2>
+        </ion-label>
+      <ion-item lines="none">
+        <p>{{data?.email}}</p>
+      </ion-item>
+
+      <ion-label>
+          <h2>
             Način plaćanja: 
           </h2>
         </ion-label>
@@ -81,18 +90,114 @@
       </ion-item>
     </div>
 
-    <h1>Odaberi printer</h1>
+       <ion-button expand="block" (click)="onPay()" *ngIf="!ticketCreated">Izrada karte</ion-button>
+
+    <div class="message" *ngIf="ticketCreated"> 
+      Nova karta je uspješno unesena.
+    </div>
+
+    <div #ticketPdf class="pdf-ticket" *ngIf="ticketCreated">
+        <h1>====================</h1>
+        <h1>KARTA</h1>
+        <h1>====================</h1>
+
+        <h2>Redni broj: {{ data.ticketNumber }}</h2>
+
+        <p>Datum: {{ formatDate(data.datum) }}</p>
+        <p>Vrijeme: {{ data.vrijeme }}:00</p>
+
+        <p>Naziv: {{ data.ime }}</p>
+        <p>E-mail: {{ data.email }}</p>
+        <p>Broj putnika: {{ totalPassengers }}</p>
+        
+        <p>Ukupno: {{ data.cijena }} €</p>
+        <p>Plaćanje: {{ data.paymentType }}</p>
+
+        <p>--------------------</p>
+        <img [src]="qrCodeImage" />
+        <p>HVALA</p>
+        <p>--------------------</p>
+        <p>www.semisubmarine-pakostane.com</p>
+      </div>
+
+
+<div class="actions-wrapper" *ngIf="ticketCreated">
+
+  <!-- PRINT -->
+  <div class="action-card">
+    <h2>Ispis karte</h2>
+
     <div class="select-container">
-      <ion-select [(ngModel)]="selectedPrinter" (ionChange)="savePrinter()">
-        <ion-select-option *ngFor="let d of devices" [value]="d.address">
+      <ion-select
+        [(ngModel)]="selectedPrinter"
+        (ionChange)="savePrinter()">
+
+        <ion-select-option
+          *ngFor="let d of devices"
+          [value]="d.address">
+
           {{ d.name }}
+
         </ion-select-option>
+
       </ion-select>
     </div>
 
-       <ion-button expand="block" (click)="onPay()">Izrada karte</ion-button>
-    </div>
+    <ion-button
+      expand="block"
+      (click)="printTicket()">
 
+      Ispis
+
+    </ion-button>
+  </div>
+
+  <!-- PDF -->
+  <div class="action-card">
+    <h2>PDF karta</h2>
+
+    <ion-button
+      expand="block"
+      (click)="downloadPdf()"
+      class="PDF-button">
+
+      Preuzmi PDF
+
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="showEmail = !showEmail">
+
+      Pošalji emailom
+
+    </ion-button>
+
+    <div *ngIf="showEmail" class="email-box">
+
+      <ion-item>
+        <ion-input
+          [(ngModel)]="email"
+          type="email"
+          placeholder="Upiši email">
+        </ion-input>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        (click)="sendPdfEmail()"
+        class="PDF-button">
+
+        Pošalji PDF
+
+      </ion-button>
+
+    </div>
+  </div>
+
+</div>
+  </div>
 </ion-content>
 
 

@@ -111,3 +111,13 @@ ion-button {
   color: orange;
   font-weight: bold;
 }
+
+.pdf-ticket {
+  position: fixed;
+  top: -99999px;
+  left: -99999px;
+  width: 300px;
+  background: white;
+  padding: 20px;
+  z-index: -1;
+}

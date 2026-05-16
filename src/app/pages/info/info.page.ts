@@ -21,11 +21,15 @@ export class InfoPage implements OnInit {
   vrijeme: string = '';
   cijena: string = '';
   ime: string = '';
+  email: string = '';
   prices: any[] = [];
   productTimes: any[] = [];
   productTypes: any[] = [];
-  orderMode: 'karta' | 'rezervacija' = 'karta';
-  paymentType: 'gotovina' | 'kartica' | null = null;
+  orderMode: 'karta' | 'rezervacija' | null = null; 
+  paymentType: 'gotovina' | 'kartica' | null = null;  
+  sirenTimes: string[] = [];
+  isMermaidShow = false;
+  MAX_SEATS = 12;
 
   constructor(
     private router: Router,
@@ -43,24 +47,83 @@ export class InfoPage implements OnInit {
 }
 
 async loadAllData() {
-  const [prices, times, types] = await Promise.all([
-    firstValueFrom(this.računService.getPrices()),
-    firstValueFrom(this.računService.getProductTimes()),
-    firstValueFrom(this.računService.getProductTypes())
-  ]);
+
+  const data = this.računService.getData();
+
+  const [prices, times, types, sirenTimes] =
+    await Promise.all([
+
+      firstValueFrom(this.računService.getPrices()),
+
+      firstValueFrom(this.računService.getProductTimes()),
+
+      firstValueFrom(this.računService.getProductTypes()),
+
+      firstValueFrom(this.računService.getSirenTimes())
+    ]);
 
   this.prices = prices;
+
   this.productTypes = types;
 
-  this.productTimes = times
-    .sort((a: any, b: any) => this.parseTime(a.title) - this.parseTime(b.title))
-    .map((t: any) => ({
-      ...t,
-      calculatedPrice: this.calculatePrice(t)
-    }));
-    this.računService.productTimesCache = times;
+  // ["09:00", "10:00", ...]
+  this.sirenTimes = sirenTimes.map(
+    (s: any) => s.time.slice(0, 5)
+  );
+
+  const isSunday =
+    this.isSunday(data.datum);
+
+  this.productTimes = await Promise.all(
+
+    times
+      .sort((a: any, b: any) =>
+        this.parseTime(a.title) -
+        this.parseTime(b.title)
+      )
+      .map(async (t: any) => {
+
+        let normalizedTime = t.title;
+
+        if (!normalizedTime.includes(':')) {
+
+          normalizedTime =
+            normalizedTime.padStart(2, '0') +
+            ':00';
+        }
+
+        // MON-SAT + sirena time
+        const useSirenaPrice =
+          !isSunday &&
+          this.sirenTimes.includes(normalizedTime);
+
+        const updatedTime = {
+
+          ...t,
+
+          producttypes:
+            useSirenaPrice ? 2 : 1
+        };
+
+        return {
+
+          ...updatedTime,
+
+          calculatedPrice:
+            this.calculatePrice(updatedTime),
+
+          availableSeats:
+            await this.getAvailableSeats(updatedTime)
+        };
+      })
+  );
+
+  this.računService.productTimesCache =
+    this.productTimes;
+
   console.log('FINAL TIMES:', this.productTimes);
-  this.cdr.detectChanges(); 
+
+  this.cdr.detectChanges();
 }
 
 calculatePrice(t: any): number {
@@ -126,6 +189,111 @@ getTypeName(typeId: number): string {
   return type ? type.title : '';
 }
 
+isPastTime(time: string): boolean {
+  const data = this.računService.getData();
+
+  // selected date from previous page
+  const selectedDate = data.datum?.split('T')[0];
+
+  // today's date
+  const today = new Date();
+  const todayString =
+    today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+
+  // only block times for TODAY
+  if (selectedDate !== todayString) {
+    return false;
+  }
+
+  // normalize time
+  let normalized = time;
+
+  if (!normalized.includes(':')) {
+    normalized = normalized.padStart(2, '0') + ':00';
+  }
+
+  const [hours, minutes] = normalized.split(':').map(Number);
+
+  const nowMinutes =
+    today.getHours() * 60 + today.getMinutes();
+
+  const timeMinutes =
+    hours * 60 + minutes;
+
+  return timeMinutes <= nowMinutes;
+}
+
+isSunday(date: string): boolean {
+  return new Date(date).getDay() === 0;
+}
+
+async getAvailableSeats(time: any): Promise<number> {
+
+  try {
+
+    const data = this.računService.getData();
+
+    const res: any = await firstValueFrom(
+      this.računService.getOrdersByDateAndTime(
+        this.formatDate(data.datum),
+        this.normalizeTime(time.title)
+      )
+    );
+
+    console.log('CHECKING TIME:', this.normalizeTime(time.title));
+    console.log('DATE:', data.datum);
+
+    const orders = Array.isArray(res)
+      ? res
+      : [res];
+
+    const bookedSeats = orders.reduce(
+      (sum: number, order: any) => {
+
+        return (
+          sum +
+          Number(order.numberadults || 0) +
+          Number(order.numberkids || 0) +
+          Number(order.numberteens || 0)
+        );
+
+      },
+      0
+    );
+
+    this.cdr.detectChanges();
+    return this.MAX_SEATS - bookedSeats;
+  } catch (err) {
+    console.error('Seat check error:', err);
+    return this.MAX_SEATS;
+  }
+}
+
+normalizeTime(time: string): string {
+
+  // 9 -> 09:00:00
+  if (!time.includes(':')) {
+    return time.padStart(2, '0') + ':00:00';
+  }
+
+  // 09:00 -> 09:00:00
+  if (time.length === 5) {
+    return time + ':00';
+  }
+
+  return time;
+}
+
+
+formatDate(date: string): string {
+
+  if (!date) return '';
+
+  return date.split('T')[0];
+}
+
   navHome() {
     this.menuOpen = false;
     this.router.navigate(['/home']);
@@ -141,6 +309,7 @@ getTypeName(typeId: number): string {
     vrijeme: this.vrijeme,
     cijena: this.selectedPrice,
     ime: this.ime,
+    email: this.email,
     paymentType: this.orderMode === 'karta' ? this.paymentType : 'rezervacija',
     orderMode: this.orderMode
   };
