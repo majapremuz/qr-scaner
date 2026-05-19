@@ -36,7 +36,6 @@
             <ion-datetime
               presentation="date"
               [min]="minDate"
-              [max]="maxDate"
               (ionChange)="onDateChange($event)">
             </ion-datetime>
 
@@ -66,7 +65,7 @@
     </ion-select>
     </div>
     
-    <ion-button expand="block" (click)="navInfo()">Sljedeći korak</ion-button>
+    <ion-button expand="block" (click)="navInfo()" [disabled]="!isFormValid()">Sljedeći korak</ion-button>
   </div>
 </ion-content>
 

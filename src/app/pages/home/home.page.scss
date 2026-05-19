@@ -104,3 +104,7 @@ ion-button {
   color: #fff;
   text-transform: none;
 }
+
+ion-button[disabled] {
+  opacity: 0.5;
+}

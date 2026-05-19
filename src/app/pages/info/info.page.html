@@ -113,7 +113,7 @@
     </div>
 </div>
         
-    <ion-button expand="block" (click)="navPotvrda()">Potvrda</ion-button>
+    <ion-button expand="block" (click)="navPotvrda()" [disabled]="!isFormValid()">Potvrda</ion-button>
   </div>
 </ion-content>
 

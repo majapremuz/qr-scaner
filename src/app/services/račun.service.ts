@@ -70,6 +70,12 @@ getSirenTimes() {
   );
 }
 
+getPricelists() {
+  return this.http.get<any[]>(
+    'https://tickets.semisubmarine-pakostane.com/api/pricelists.php'
+  );
+}
+
 getProductTypes() {
   return this.http.get<any[]>(
     'https://tickets.semisubmarine-pakostane.com/api/producttypes.php'

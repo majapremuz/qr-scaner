@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RačunService } from 'src/app/services/račun.service';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
 import { PrinterService } from 'src/app/services/printer.service';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
@@ -23,7 +23,7 @@ import * as QRCode from 'qrcode';
   templateUrl: './rezervacije.page.html',
   styleUrls: ['./rezervacije.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class RezervacijePage implements OnInit {
 @ViewChild('ticketPdf', { static: false }) ticketPdf!: ElementRef;
@@ -48,7 +48,8 @@ constructor(
   private printerService: PrinterService,
   private http: HttpClient,
   private alertController: AlertController,
-  private emailComposer: EmailComposer
+  private emailComposer: EmailComposer,
+  private ngZone: NgZone
 ) {}
 
 async ngOnInit() {
@@ -77,33 +78,33 @@ formatDate(date: string): string {
 
 async loadOrders() {
   try {
+
     const res: any = await firstValueFrom(
       this.racunService.getOrdersByDateAndTime(this.date, this.time)
     );
 
-    console.log('RAW:', res);
+    let orders: any[] = [];
 
-    if (!res) {
-      this.orders = [];
+    if (Array.isArray(res)) {
+      orders = res.filter(o => o.response === 'Success');
     }
-    else if (Array.isArray(res)) {
-      this.orders = res.filter(o => o.response === 'Success');
-    }
-    else if (res.response === 'Success') {
-      this.orders = [res];
-    }
-    else {
-      this.orders = [];
+    else if (res?.response === 'Success') {
+      orders = [res];
     }
 
-    console.log('Orders:', this.orders);
+    this.orders = orders.map(o => ({
+      ...o,
+      emailInput: o.mail ?? o.email ?? ''
+    }));
+
+    console.log('Orders loaded:', this.orders);
 
   } catch (err) {
+
     console.error(err);
     this.orders = [];
   }
-
-  this.cdr.detectChanges();
+    this.cdr.detectChanges();
 }
 
 async prepareTicket(order: any) {
@@ -299,7 +300,7 @@ async sendPdfEmail(order: any) {
   }
 
   this.emailComposer.open({
-    to: this.email,
+    to: order.emailInput,
 
     subject: 'Potvrda narudžbe',
 
@@ -384,6 +385,13 @@ async deleteReservation(order: any) {
       this.orders = this.orders.filter(
         o => o.id !== order.id
       );
+
+      this.orders = this.orders.map(o => ({
+        ...o,
+        emailInput: o.mail || ''
+      }));
+
+      console.log("email input:", this.orders); 
 
       // force new array reference
       this.orders = [...this.orders];

@@ -35,16 +35,12 @@
   <div class="tabela">
   <!-- HEADER -->
   <div class="header">Početak</div>
-  <div class="header">Ukupno</div>
   <div class="header">Riva pakoštane</div>
-  <div class="header">Pine beach</div>
 
   <!-- ROWS -->
   <ng-container *ngFor="let row of d.rows">
     <div class="time" (click)="openOrders(d.day, row.time)">{{ row.time }}</div>
-    <div class="total" [ngClass]="{ 'full': row.total >= 12 }">{{ row.total }}</div>
     <div class="riva" [ngClass]="{ 'full': row.riva >= 12 }">{{ row.riva }}</div>
-    <div class="pine" [ngClass]="{ 'full': row.pine_beach >= 12 }">{{ row.pine_beach }}</div>
   </ng-container>
   </div>
   </div>

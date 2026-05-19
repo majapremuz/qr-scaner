@@ -64,6 +64,17 @@ export class HomePage implements OnInit {
   this.menuOpen = !this.menuOpen;
 }
 
+isFormValid(): boolean {
+
+  if (!this.datum) {
+    return false;
+  }
+  if (this.totalPassengers <= 0) {
+    return false;
+  }
+  return true;
+}
+
 getTodayLocal(): string {
   const today = new Date();
   const offset = today.getTimezoneOffset();
@@ -118,6 +129,11 @@ getAllowedNumbers(current: 'odrasli' | 'djeca' | 'bebe'): number[] {
   }
 
   navInfo() {
+
+    if (!this.isFormValid()) {
+      return;
+    }
+    
     const newData = {
     polaznaTocka: this.polaznaTocka,
     datum: this.datum,

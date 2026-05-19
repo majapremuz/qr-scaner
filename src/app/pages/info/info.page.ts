@@ -25,6 +25,7 @@ export class InfoPage implements OnInit {
   prices: any[] = [];
   productTimes: any[] = [];
   productTypes: any[] = [];
+  pricelists: any[] = [];
   orderMode: 'karta' | 'rezervacija' | null = null; 
   paymentType: 'gotovina' | 'kartica' | null = null;  
   sirenTimes: string[] = [];
@@ -46,107 +47,223 @@ export class InfoPage implements OnInit {
   this.menuOpen = !this.menuOpen;
 }
 
+isFormValid(): boolean {
+
+  if (!this.vrijeme) {
+    return false;
+  }
+
+  if (!this.ime?.trim()) {
+    return false;
+  }
+
+  if (!this.email?.trim()) {
+    return false;
+  }
+
+  if (!this.orderMode) {
+    return false;
+  }
+
+  if (
+    this.orderMode === 'karta' &&
+    !this.paymentType
+  ) {
+    return false;
+  }
+  return true;
+}
+
 async loadAllData() {
 
   const data = this.računService.getData();
 
-  const [prices, times, types, sirenTimes] =
+  const [prices, times, types, sirenTimes, pricelists] =
     await Promise.all([
-
       firstValueFrom(this.računService.getPrices()),
-
       firstValueFrom(this.računService.getProductTimes()),
-
       firstValueFrom(this.računService.getProductTypes()),
-
-      firstValueFrom(this.računService.getSirenTimes())
+      firstValueFrom(this.računService.getSirenTimes()),
+      firstValueFrom(this.računService.getPricelists())
     ]);
 
   this.prices = prices;
-
   this.productTypes = types;
+  this.pricelists = pricelists;
 
-  // ["09:00", "10:00", ...]
-  this.sirenTimes = sirenTimes.map(
-    (s: any) => s.time.slice(0, 5)
+  const selectedDateStr = this.formatDate(data.datum);
+  const [year, month, day] = selectedDateStr
+  .split('-')
+  .map(Number);
+
+const selectedDate = new Date(year, month - 1, day);
+  const isSunday = selectedDate.getDay() === 0;
+
+  // normalize siren times once
+  const normalizedSirenTimes = sirenTimes.map((s: any) =>
+    this.normalizeTime(s.time).slice(0, 5)
   );
 
-  const isSunday =
-    this.isSunday(data.datum);
+  // find active pricelist (IMPORTANT FIX: safe parsing)
+  const activePricelist = this.pricelists.find((p: any) => {
+    if (!p.startdate || !p.enddate) return false;
+
+    const [startYear, startMonth, startDay] =
+  p.startdate.split('-').map(Number);
+
+const [endYear, endMonth, endDay] =
+  p.enddate.split('-').map(Number);
+
+const start =
+  new Date(startYear, startMonth - 1, startDay);
+
+const end =
+  new Date(endYear, endMonth - 1, endDay);
+
+    return selectedDate >= start && selectedDate <= end;
+  });
+
+  const isSeason = this.pricelists.some((p: any) => {
+
+  // ONLY real season
+  if (Number(p.category) !== 2) {
+    return false;
+  }
+
+  if (!p.startdate || !p.enddate) {
+    return false;
+  }
+
+  const [startYear, startMonth, startDay] =
+    p.startdate.split('-').map(Number);
+
+  const [endYear, endMonth, endDay] =
+    p.enddate.split('-').map(Number);
+
+  const start =
+    new Date(startYear, startMonth - 1, startDay);
+
+  const end =
+    new Date(endYear, endMonth - 1, endDay);
+
+  return (
+    selectedDate >= start &&
+    selectedDate <= end
+  );
+});
 
   this.productTimes = await Promise.all(
-
     times
       .sort((a: any, b: any) =>
-        this.parseTime(a.title) -
-        this.parseTime(b.title)
+        this.parseTime(a.title) - this.parseTime(b.title)
       )
       .map(async (t: any) => {
 
-        let normalizedTime = t.title;
+        const timeKey = this.normalizeTime(t.title).slice(0, 5);
 
-        if (!normalizedTime.includes(':')) {
-
-          normalizedTime =
-            normalizedTime.padStart(2, '0') +
-            ':00';
-        }
-
-        // MON-SAT + sirena time
-        const useSirenaPrice =
+        const isSirenaTime =
           !isSunday &&
-          this.sirenTimes.includes(normalizedTime);
+          isSeason &&
+          normalizedSirenTimes.includes(timeKey);
+
+          console.log('SIREN DEBUG', {
+            selectedDate,
+            isSunday,
+            isSeason,
+            normalizedSirenTimes,
+            times: times.map(t => this.normalizeTime(t.title).slice(0,5))
+          });
+
+          console.log('TIME CHECK', {
+          time: t.title,
+          timeKey,
+          sirens: normalizedSirenTimes,
+          match: normalizedSirenTimes.includes(timeKey)
+        });
 
         const updatedTime = {
-
           ...t,
-
-          producttypes:
-            useSirenaPrice ? 2 : 1
+          producttypes: isSirenaTime ? 2 : t.producttypes,
         };
+          console.log('producttypE:', t.producttypes)
+
 
         return {
-
           ...updatedTime,
-
-          calculatedPrice:
-            this.calculatePrice(updatedTime),
-
-          availableSeats:
-            await this.getAvailableSeats(updatedTime)
+          calculatedPrice: this.calculatePrice(updatedTime),
+          availableSeats: await this.getAvailableSeats(updatedTime)
         };
       })
   );
 
-  this.računService.productTimesCache =
-    this.productTimes;
+  this.računService.productTimesCache = this.productTimes;
 
   console.log('FINAL TIMES:', this.productTimes);
 
   this.cdr.detectChanges();
 }
 
+
 calculatePrice(t: any): number {
-  if (!t.producttypes) return 0; 
+
   const data = this.računService.getData();
 
   const odrasli = Number(data.odrasli || 0);
   const djeca = Number(data.djeca || 0);
   const bebe = Number(data.bebe || 0);
 
-  const priceItem = this.prices.find(p => p.type === t.producttypes);
+  const selected = this.formatDate(data.datum);
+
+    const activePricelist = this.pricelists.find((p: any) => {
+
+      if (!p.startdate || !p.enddate) return false;
+
+      const start = p.startdate.slice(0, 10);
+      const end = p.enddate.slice(0, 10);
+
+      return selected >= start && selected <= end;
+    });
+
+    console.log('ACTIVE PRICELIST:', activePricelist);
+    console.log('SELECTED DATE:', selected);
+
+  if (!activePricelist) {
+    console.warn('No active pricelist');
+    return 0;
+  }
+
+  
+  // find matching price
+  const priceItem = this.prices.find((p: any) =>
+  Number(p.pricelist) === Number(activePricelist.id) &&
+  Number(p.type) === Number(t.producttypes)
+);
+
+  console.log('LOOKUP:', {
+  pricelist: activePricelist?.id,
+  type: t.producttypes,
+  prices: this.prices
+});
+
+console.log('PRICE ITEM:', priceItem);
 
   if (!priceItem) {
-    console.warn('No price match for:', t);
+
+    console.warn('No matching price:', {
+      pricelist: activePricelist.id,
+      type: t.producttypes
+    });
+
     return 0;
   }
 
   return (
-    odrasli * priceItem.priceadult +
-    djeca * priceItem.priceteen +
-    bebe * priceItem.pricebaby
+    odrasli * Number(priceItem.priceadult) +
+    djeca * Number(priceItem.priceteen) +
+    bebe * Number(priceItem.pricebaby)
   );
 }
+
 parseTime(time: string): number {
   // normalize: "9" → "09:00", "14" → "14:00"
   if (!time.includes(':')) {
@@ -229,44 +346,82 @@ isSunday(date: string): boolean {
   return new Date(date).getDay() === 0;
 }
 
+/*isSeason(date: string): boolean {
+
+  const selectedDate =
+    new Date(this.formatDate(date));
+
+  const seasonPricelist =
+    this.pricelists.find(
+      p => p.category === 2
+    );
+
+  if (
+    !seasonPricelist?.startdate ||
+    !seasonPricelist?.enddate
+  ) {
+    return false;
+  }
+
+  const start =
+    new Date(seasonPricelist.startdate);
+
+  const end =
+    new Date(seasonPricelist.enddate);
+
+  return (
+    selectedDate >= start &&
+    selectedDate <= end
+  );
+}*/
+
+toDateOnly(date: string | Date): number {
+  return new Date(date).setHours(0, 0, 0, 0);
+}
+
 async getAvailableSeats(time: any): Promise<number> {
 
   try {
 
     const data = this.računService.getData();
 
+    const date =
+      this.formatDate(data.datum);
+
     const res: any = await firstValueFrom(
-      this.računService.getOrdersByDateAndTime(
-        this.formatDate(data.datum),
-        this.normalizeTime(time.title)
-      )
+      this.računService.getSchedule(date)
     );
 
-    console.log('CHECKING TIME:', this.normalizeTime(time.title));
-    console.log('DATE:', data.datum);
+    const normalizedSelectedTime =
+      this.normalizeTime(time.title);
 
-    const orders = Array.isArray(res)
-      ? res
-      : [res];
+    const matchingRow = res.find((r: any) => {
 
-    const bookedSeats = orders.reduce(
-      (sum: number, order: any) => {
+      return (
+        this.normalizeTime(r.time) ===
+        normalizedSelectedTime
+      );
 
-        return (
-          sum +
-          Number(order.numberadults || 0) +
-          Number(order.numberkids || 0) +
-          Number(order.numberteens || 0)
-        );
+    });
 
-      },
-      0
-    );
+    if (!matchingRow) {
+      return this.MAX_SEATS;
+    }
 
-    this.cdr.detectChanges();
+    // IMPORTANT:
+    // adjust field name depending on API response
+
+    const bookedSeats =
+      Number(matchingRow.total || 0);
+
+    console.log('AVAILABLE SEATS:', this.MAX_SEATS - bookedSeats);
+
     return this.MAX_SEATS - bookedSeats;
+
   } catch (err) {
+
     console.error('Seat check error:', err);
+
     return this.MAX_SEATS;
   }
 }
@@ -305,6 +460,11 @@ formatDate(date: string): string {
   }
 
   navPotvrda() {
+
+    if (!this.isFormValid()) {
+      return;
+    }
+
     const newData = {
     vrijeme: this.vrijeme,
     cijena: this.selectedPrice,

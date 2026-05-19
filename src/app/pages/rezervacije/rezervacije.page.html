@@ -71,31 +71,6 @@
           Ispiši ponovno
         </ion-button>
 
-        <div #ticketPdf class="pdf-ticket">
-        <h1>====================</h1>
-        <h1>KARTA</h1>
-        <h1>====================</h1>
-
-        <h2>Redni broj: {{ selectedTicket.ticketNumber }}</h2>
-
-        <p>Datum: {{ formatDate(selectedTicket.datum) }}</p>
-        <p>Vrijeme: {{ selectedTicket.vrijeme }}:00</p>
-
-        <p>Naziv: {{ selectedTicket.ime }}</p>
-        <p>E-mail: {{ selectedTicket.email }}</p>
-        <p>Broj putnika: {{ totalPassengers }}</p>
-        
-        <p>Ukupno: {{ selectedTicket.cijena }} €</p>
-        <p>Plaćanje: {{ selectedTicket.paymentType }}</p>
-
-        <p>--------------------</p>
-        <img [src]="qrCodeImage" />
-        <p>HVALA</p>
-        <p>--------------------</p>
-        <p>www.semisubmarine-pakostane.com</p>
-      </div>
-
-
         <ion-button
       expand="block"
       (click)="downloadPdf(o)"
@@ -109,9 +84,9 @@
 
       <ion-item>
         <ion-input
-          [(ngModel)]="email"
-          type="email"
-          placeholder="Upiši email">
+          [value]="o.emailInput"
+          (ionInput)="o.emailInput = $event.detail.value"
+          type="email">
         </ion-input>
       </ion-item>
 
@@ -135,6 +110,30 @@
       </div>
 
     </div>
+    <div #ticketPdf class="pdf-ticket">
+        <h1>====================</h1>
+        <h1>KARTA</h1>
+        <h1>====================</h1>
+
+        <h2>Redni broj: {{ selectedTicket.ticketNumber }}</h2>
+
+        <p>Datum: {{ formatDate(selectedTicket.datum) }}</p>
+        <p>Vrijeme: {{ selectedTicket.vrijeme }}:00</p>
+
+        <p>Naziv: {{ selectedTicket.ime }}</p>
+        <p>E-mail: {{ selectedTicket.email }}</p>
+        <p>Broj putnika: {{ totalPassengers }}</p>
+        
+        <p>Ukupno: {{ selectedTicket.cijena }} €</p>
+        <p>Plaćanje: {{ selectedTicket.paymentType }}</p>
+
+        <p>--------------------</p>
+        <img [src]="qrCodeImage" />
+        <p>HVALA</p>
+        <p>--------------------</p>
+        <p>www.semisubmarine-pakostane.com</p>
+      </div>
+
     </div>
     
   </div>
