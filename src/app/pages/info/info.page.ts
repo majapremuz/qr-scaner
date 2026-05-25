@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { RačunService } from 'src/app/services/račun.service';
 import { firstValueFrom } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-info',
@@ -20,6 +22,8 @@ export class InfoPage implements OnInit {
 
   vrijeme: string = '';
   cijena: string = '';
+  pojedinačnaCijena: string = '';
+  vrstaVoznje: string = '';
   ime: string = '';
   email: string = '';
   prices: any[] = [];
@@ -35,7 +39,8 @@ export class InfoPage implements OnInit {
   constructor(
     private router: Router,
     private računService: RačunService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) { }
 
   async ngOnInit() {
@@ -203,6 +208,32 @@ const end =
   this.cdr.detectChanges();
 }
 
+getPriceItem(t: any): any {
+
+  const data = this.računService.getData();
+  const selected = this.formatDate(data.datum);
+
+  const activePricelist = this.pricelists.find((p: any) => {
+
+    if (!p.startdate || !p.enddate) {
+      return false;
+    }
+
+    const start = p.startdate.slice(0, 10);
+    const end = p.enddate.slice(0, 10);
+
+    return selected >= start && selected <= end;
+  });
+
+  if (!activePricelist) {
+    return null;
+  }
+
+  return this.prices.find((p: any) =>
+    Number(p.pricelist) === Number(activePricelist.id) &&
+    Number(p.type) === Number(t.producttypes)
+  );
+}
 
 calculatePrice(t: any): number {
 
@@ -461,25 +492,49 @@ formatDate(date: string): string {
 
   navPotvrda() {
 
-    if (!this.isFormValid()) {
-      return;
-    }
+  if (!this.isFormValid()) {
+    return;
+  }
 
-    const newData = {
+  const selectedTime = this.productTimes.find(
+    t => t.title === this.vrijeme
+  );
+
+  const priceItem =
+    this.getPriceItem(selectedTime);
+
+  const vrstaVoznje =
+    this.getTypeTitle(selectedTime.producttypes);
+
+  const newData = {
+
     vrijeme: this.vrijeme,
-    cijena: this.selectedPrice,
+
+    cijena: selectedTime.calculatedPrice,
+
+    adultPrice: priceItem?.priceadult || 0,
+    childPrice: priceItem?.priceteen || 0,
+    babyPrice: priceItem?.pricebaby || 0,
+
+    vrstaVoznje: vrstaVoznje,
+
     ime: this.ime,
     email: this.email,
-    paymentType: this.orderMode === 'karta' ? this.paymentType : 'rezervacija',
+
+    paymentType:
+      this.orderMode === 'karta'
+        ? this.paymentType
+        : 'rezervacija',
+
     orderMode: this.orderMode
   };
 
   console.log('PAGE 2 SAVING:', newData);
 
   this.računService.setData(newData);
+
   this.router.navigate(['/potvrda']);
-  this.menuOpen = false;
-  }
+}
 
   navList() {
     this.menuOpen = false;
@@ -495,4 +550,10 @@ formatDate(date: string): string {
     this.menuOpen = false;
     this.router.navigate(['/scanner']);
   }
+
+  logout() {
+    this.authService.logout();
+    App.exitApp();
+  }
+
 }

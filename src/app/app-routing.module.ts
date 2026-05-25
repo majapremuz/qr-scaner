@@ -10,7 +10,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -36,6 +36,10 @@ const routes: Routes = [
   {
     path: 'rezervacije',
     loadChildren: () => import('./pages/rezervacije/rezervacije.module').then( m => m.RezervacijePageModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   }
 ];
 

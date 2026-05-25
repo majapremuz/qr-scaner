@@ -1,0 +1,10 @@
+<ion-content>
+  <ion-card>
+    <form [formGroup]="applyForm" (ngSubmit)="login()">
+        <ion-input placeholder="Korisničko ime" type="text" formControlName="username" class="username"></ion-input>
+        <ion-input placeholder="Lozinka" type="password" formControlName="password"></ion-input>
+
+      <ion-button name="submit" type="submit">Prijava</ion-button>
+    </form>  
+  </ion-card>
+</ion-content>

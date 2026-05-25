@@ -6,6 +6,8 @@ import { AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-scanner',
@@ -31,7 +33,8 @@ export class ScannerPage implements OnInit {
     private alertController: AlertController, 
     private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   async ngOnInit() {
@@ -177,6 +180,11 @@ toggleMenu() {
   navScanner() {
     this.menuOpen = false;
     this.router.navigate(['/scanner']);
+  }
+
+  logout() {
+    this.authService.logout();
+    App.exitApp();
   }
 
 }

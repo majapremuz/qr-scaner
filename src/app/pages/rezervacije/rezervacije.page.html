@@ -18,6 +18,7 @@
   <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
   <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Promjena rezervacije</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
+  <a (click)="logout()">Odjava</a>
 </div>
 
 
@@ -105,35 +106,150 @@
         <ion-button color="danger" (click)="cancelReservation(o)">
           Otkaži
         </ion-button>
+
       </div>
 
       </div>
 
     </div>
-    <div #ticketPdf class="pdf-ticket">
-        <h1>====================</h1>
-        <h1>KARTA</h1>
-        <h1>====================</h1>
 
-        <h2>Redni broj: {{ selectedTicket.ticketNumber }}</h2>
+      <div class="ticket" #ticketPDF>
+  <div class="ticket-header">
+    <h1>KARTA</h1>
+  </div>
 
-        <p>Datum: {{ formatDate(selectedTicket.datum) }}</p>
-        <p>Vrijeme: {{ selectedTicket.vrijeme }}:00</p>
+  <div class="ticket-body">
 
-        <p>Naziv: {{ selectedTicket.ime }}</p>
-        <p>E-mail: {{ selectedTicket.email }}</p>
-        <p>Broj putnika: {{ totalPassengers }}</p>
-        
-        <p>Ukupno: {{ selectedTicket.cijena }} €</p>
-        <p>Plaćanje: {{ selectedTicket.paymentType }}</p>
+    <div class="row">
+      <span class="label">Redni broj</span>
+      <span class="value">{{ selectedTicket.ticketNumber }}</span>
+    </div>
 
-        <p>--------------------</p>
-        <img [src]="qrCodeImage" />
-        <p>HVALA</p>
-        <p>--------------------</p>
-        <p>www.semisubmarine-pakostane.com</p>
-      </div>
+    <div class="row">
+      <span class="label">Datum</span>
+      <span class="value">{{ formatDate(selectedTicket.datum) }}</span>
+    </div>
 
+    <div class="row">
+      <span class="label">Vrijeme</span>
+      <span class="value">{{ selectedTicket.vrijeme }}:00</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <span class="label">Ime</span>
+      <span class="value">{{ selectedTicket.ime }}</span>
+    </div>
+
+    <div class="row">
+      <span class="label">E-mail</span>
+      <span class="value">{{ selectedTicket.email }}</span>
+    </div>
+
+    <div class="row">
+      <span class="label">Putnici</span>
+      <span class="value">{{ totalPassengers }}</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="total">
+      {{ selectedTicket.cijena }} €
+    </div>
+
+    <img class="qr" [src]="qrCodeImage" />
+
+    <div class="footer">
+      HVALA
+      <br />
+      www.semisubmarine-pakostane.com
+    </div>
+
+  </div>
+</div>
+
+      <!-- <div class="receipt" #receiptPDF>
+
+  <div class="center">
+    <strong>PLAVA LAGUNA D.O.O.</strong><br>
+    FRANE PETRIČA 10C, ZADAR<br>
+    OIB: 33848595948<br><br>
+
+    RIVA PAKOŠTANE<br>
+    Riva u Pakoštanima
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="center">
+    <strong>RAČUN {{ selectedTicket.invoice_number }}</strong><br>
+    {{ formatDate(selectedTicket.datum) }} {{ selectedTicket.vrijeme }}:00
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row header">
+    <span>Naziv</span>
+    <span>Iznos</span>
+  </div>
+
+  <div class="row">
+    <span>{{ selectedTicket.vrstaVoznje }}</span>
+    <span>{{ selectedTicket.cijena }} €</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <span>Putnici</span>
+    <span>{{ totalPassengers }}</span>
+  </div>
+
+  <div class="row">
+    <span>PDV</span>
+    <span>0%</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row total">
+    <span>UKUPNO</span>
+    <span>{{ selectedTicket.cijena }} €</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <span>Način plaćanja</span>
+    <span>{{ selectedTicket.paymentType }} €</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="center">
+    <span>*1 PDV nije zaračunat sukladno</span>
+    <span>čl. 90. st. 2. Zakona o PDV-u</span>
+  </div>
+
+  <div class="center">
+    Korinik: {{ username }}<br>
+    JIR: {{ selectedTicket.JIR }}<br>
+    ZKI: {{ selectedTicket.ZKI }}
+  </div>
+
+  <img class="qr" [src]="fiscalQrImage" />
+
+  <div class="center small">
+    www.semisubmarine-pakostane.com
+    <br><br>
+    Hvala! Thank you!
+    <br><br>
+    Fiskalna blagajna: Neosalon.hr
+  </div>
+
+  </div>
+ </div>-->
     </div>
     
   </div>

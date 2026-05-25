@@ -19,10 +19,22 @@ export class RačunService {
     bebe: 0,
     vrijeme: '',
     cijena: '',
+    adultPrice: 0,
+    childPrice: 0,
+    babyPrice: 0,
+    vrstaVoznje: '',
     ime: '',
     email: '',
     paymentType: '',
-    orderMode: '' 
+    orderMode: '' ,
+
+    JIR: '',
+    ZKI: '',
+    invoice_number: '',
+    operator: '',
+    cashRegister: '',
+    fiscalTime: ''
+
   };
 
   setData(newData: any) {

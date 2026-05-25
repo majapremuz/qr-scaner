@@ -8,6 +8,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { RačunService } from 'src/app/services/račun.service';
 import { HttpClient } from '@angular/common/http';
+import { App } from '@capacitor/app';
 
 
 @Component({
@@ -180,5 +181,9 @@ getAllowedNumbers(current: 'odrasli' | 'djeca' | 'bebe'): number[] {
     this.router.navigate(['/scanner']);
   }
 
+  logout() {
+    this.authService.logout();
+    App.exitApp();
+  }
 
 }

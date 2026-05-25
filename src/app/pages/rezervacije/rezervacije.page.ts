@@ -16,6 +16,8 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 import { Share } from '@capacitor/share';
 import * as QRCode from 'qrcode';
+import { AuthService } from 'src/app/services/auth.service';
+import { App } from '@capacitor/app';
 
 
 @Component({
@@ -26,7 +28,11 @@ import * as QRCode from 'qrcode';
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class RezervacijePage implements OnInit {
-@ViewChild('ticketPdf', { static: false }) ticketPdf!: ElementRef;
+@ViewChild('ticketPDF')
+  ticketPDF!: ElementRef;
+
+//@ViewChild('receiptPDF')
+//receiptPDF!: ElementRef;
 currentPage: string = 'rezervacije';
 menuOpen = false;
 orders: any[] = [];
@@ -49,7 +55,8 @@ constructor(
   private http: HttpClient,
   private alertController: AlertController,
   private emailComposer: EmailComposer,
-  private ngZone: NgZone
+  private ngZone: NgZone,
+  private authService: AuthService
 ) {}
 
 async ngOnInit() {
@@ -70,6 +77,66 @@ async ngOnInit() {
 
 toggleMenu() {
   this.menuOpen = !this.menuOpen;
+}
+
+async buildPrintData(order: any) {
+
+  console.log('ORDER:', order);
+
+  if (!order) {
+    return null;
+  }
+
+  const productTimes = this.racunService.productTimesCache;
+
+  const timeObject = productTimes.find(
+    t => t.id == order.starttime
+  );
+
+  const vrijeme = timeObject?.title || '';
+
+  return {
+    qrCode: order.code,
+    ticketNumber: order.id,
+
+    datum: order.startdate,
+    vrijeme,
+
+    odrasli: order.numberadults,
+    djeca: order.numberkids,
+    bebe: 0,
+
+    ime: order.name || '',
+    email: order.mail || '',
+
+    cijena: order.price || 0,
+
+    paymentType: order.payment_type,
+
+    status: Number(order.status),
+
+    JIR: order.jir,
+    ZKI: order.zki,
+
+    invoice_number: order.receipt_number,
+    cashRegister: order.cash_register,
+
+    vrstaVoznje: order.product_name
+  };
+}
+
+async previewPrint(order: any) {
+
+  const data =
+    await this.buildPrintData(order);
+
+  console.log(
+    this.printerService.generateFiscalReceipt(data)
+  );
+
+  console.log(
+    this.printerService.generateTicket(data)
+  );
 }
 
 formatDate(date: string): string {
@@ -154,61 +221,25 @@ async prepareTicket(order: any) {
 }
 
 async reprintTicket(order: any) {
+    console.log('REPRINT ORDER:', order);
 
-  const productTimes = this.racunService.productTimesCache;
+  const data =
+    await this.buildPrintData(order);
 
-  // find matching time object
-  const timeObject = productTimes.find(
-    t => t.id == order.starttime
-  );
-
-  // actual displayed time
-  const vrijeme = timeObject?.title || '';
-
-  // calculate price again
-  const priceItem = this.prices.find(
-    p => p.type === timeObject?.producttypes
-  );
-
-  const totalPrice =
-    (Number(order.numberadults) * Number(priceItem?.priceadult || 0)) +
-    (Number(order.numberkids) * Number(priceItem?.priceteen || 0));
-
-  const data = {
-    qrCode: order.code,
-    ticketNumber: order.id,
-    datum: order.startdate,
-    vrijeme: vrijeme,
-    odrasli: order.numberadults,
-    djeca: order.numberkids,
-    bebe: 0,
-    ime: order.name || '',
-    email: order.mail || '',
-    cijena: totalPrice,
-
-    paymentType: order.payment_type || 'rezervacija'
-  };
-
-  console.log('REPRINT DATA:', data);
-
-  const printer = this.printerService.getPrinter();
+  const printer =
+    this.printerService.getPrinter();
 
   await this.printerService.printReceipt(
     printer,
     data
   );
-
 }
 
 async generatePdfFile(): Promise<string | null> {
 
   try {
 
-    const element = this.ticketPdf.nativeElement;
-
-    const canvas = await html2canvas(element);
-
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    this.cdr.detectChanges();
 
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -216,19 +247,52 @@ async generatePdfFile(): Promise<string | null> {
       format: 'a4'
     });
 
-    const imgWidth = 180;
+    // PAGE 1 - TICKET
 
-    const imgHeight =
-      canvas.height * imgWidth / canvas.width;
+    const ticketCanvas = await html2canvas(
+      this.ticketPDF.nativeElement,
+      { scale: 2 }
+    );
+
+    const ticketImg =
+      ticketCanvas.toDataURL('image/jpeg', 1.0);
 
     pdf.addImage(
-      imgData,
+      ticketImg,
       'JPEG',
       15,
       20,
-      imgWidth,
-      imgHeight
+      180,
+      ticketCanvas.height * 180 / ticketCanvas.width
     );
+
+    // PAGE 2 - RECEIPT
+
+    /*if (
+      this.selectedTicket.status === 2 &&
+      this.receiptPDF
+    ) {
+
+      pdf.addPage();
+
+      const receiptCanvas =
+        await html2canvas(
+          this.receiptPDF.nativeElement,
+          { scale: 2 }
+        );
+
+      const receiptImg =
+        receiptCanvas.toDataURL('image/jpeg', 1.0);
+
+      pdf.addImage(
+        receiptImg,
+        'JPEG',
+        15,
+        20,
+        180,
+        receiptCanvas.height * 180 / receiptCanvas.width
+      );
+    }*/
 
     const pdfBlob = pdf.output('blob');
 
@@ -238,16 +302,12 @@ async generatePdfFile(): Promise<string | null> {
     const fileName =
       `ticket-${this.selectedTicket.ticketNumber}.pdf`;
 
-    console.log('PDF NAME:', fileName);
-
-    const savedFile = await Filesystem.writeFile({
-      path: fileName,
-      data: base64 as string,
-      directory: Directory.Cache
-    });
-
-    console.log('PDF SAVED:', savedFile.uri);
-    this.cdr.detectChanges();
+    const savedFile =
+      await Filesystem.writeFile({
+        path: fileName,
+        data: base64 as string,
+        directory: Directory.Cache
+      });
 
     return savedFile.uri;
 
@@ -258,6 +318,7 @@ async generatePdfFile(): Promise<string | null> {
     return null;
   }
 }
+
 
 
 async downloadPdf(order: any) {
@@ -444,6 +505,11 @@ navHome() {
   navScanner() {
     this.menuOpen = false;
     this.router.navigate(['/scanner']);
+  }
+
+  logout() {
+    this.authService.logout();
+    App.exitApp();
   }
 
 }

@@ -18,6 +18,7 @@
   <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
   <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Promjena rezervacije</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
+  <a (click)="logout()">Odjava</a>
 </div>
 
 <ion-content [fullscreen]="true">
@@ -96,30 +97,172 @@
       Nova karta je uspješno unesena.
     </div>
 
-    <div #ticketPdf class="pdf-ticket" *ngIf="ticketCreated">
-        <h1>====================</h1>
-        <h1>KARTA</h1>
-        <h1>====================</h1>
+      <div class="ticket" *ngIf="ticketCreated" #ticketPDF>
+  <div class="ticket-header">
+    <h1>KARTA</h1>
+  </div>
 
-        <h2>Redni broj: {{ data.ticketNumber }}</h2>
+  <div class="ticket-body">
 
-        <p>Datum: {{ formatDate(data.datum) }}</p>
-        <p>Vrijeme: {{ data.vrijeme }}:00</p>
+    <div class="ticket-row">
+      <span class="label">Redni broj</span>
+      <span class="value">{{ data.ticketNumber }}</span>
+    </div>
 
-        <p>Naziv: {{ data.ime }}</p>
-        <p>E-mail: {{ data.email }}</p>
-        <p>Broj putnika: {{ totalPassengers }}</p>
-        
-        <p>Ukupno: {{ data.cijena }} €</p>
-        <p>Plaćanje: {{ data.paymentType }}</p>
+    <div class="ticket-row">
+      <span class="label">Datum</span>
+      <span class="value">{{ formatDate(data.datum) }}</span>
+    </div>
 
-        <p>--------------------</p>
-        <img [src]="qrCodeImage" />
-        <p>HVALA</p>
-        <p>--------------------</p>
-        <p>www.semisubmarine-pakostane.com</p>
-      </div>
+    <div class="ticket-row">
+      <span class="label">Vrijeme</span>
+      <span class="value">{{ data.vrijeme }}:00</span>
+    </div>
 
+    <div class="divider"></div>
+
+    <div class="ticket-row">
+      <span class="label">Ime</span>
+      <span class="value">{{ data.ime }}</span>
+    </div>
+
+    <div class="ticket-row">
+      <span class="label">E-mail</span>
+      <span class="value">{{ data.email }}</span>
+    </div>
+
+    <div class="ticket-row">
+      <span class="label">Putnici</span>
+      <span class="value">{{ totalPassengers }}</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="total">
+      {{ data.cijena }} €
+    </div>
+
+    <img class="qr" [src]="qrCodeImage" />
+
+    <div class="footer">
+      HVALA
+      <br />
+      www.semisubmarine-pakostane.com
+    </div>
+
+  </div>
+</div>
+
+      <div class="receipt" *ngIf="ticketCreated && data.status === 2" #receiptPDF>
+
+  <div class="center">
+    <strong>PLAVA LAGUNA D.O.O.</strong><br>
+    FRANE PETRIČA 10C, ZADAR<br>
+    OIB: 33848595948<br><br>
+
+    RIVA PAKOŠTANE<br>
+    Riva u Pakoštanima
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="center">
+    <strong>RAČUN {{ data.invoice_number }}</strong><br>
+    {{ formatDate(data.datum) }} {{ data.vrijeme }}:00
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row header">
+  <span>Stavka</span>
+  <span>Kol</span>
+  <span>Cijena</span>
+  <span>Iznos</span>
+</div>
+
+<div class="divider"></div>
+
+<ng-container *ngIf="data.odrasli > 0">
+  <div class="item-title">
+    Odrasla karta - {{ data.vrstaVoznje }}
+  </div>
+
+  <div class="row">
+    <span></span>
+    <span>{{ data.odrasli }}</span>
+    <span>{{ data.adultPrice }}</span>
+    <span>{{ data.odrasli * data.adultPrice }}</span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="data.djeca > 0">
+  <div class="item-title">
+    Dječja karta - {{ data.vrstaVoznje }}
+  </div>
+
+  <div class="row">
+    <span></span>
+    <span>{{ data.djeca }}</span>
+    <span>{{ data.childPrice }}</span>
+    <span>{{ data.djeca * data.childPrice }}</span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="data.bebe > 0">
+  <div class="item-title">
+    Dijete do 2 godine - {{ data.vrstaVoznje }}
+  </div>
+
+  <div class="row">
+    <span></span>
+    <span>{{ data.bebe }}</span>
+    <span>{{ data.babyPrice }}</span>
+    <span>{{ data.bebe * data.babyPrice }}</span>
+  </div>
+</ng-container>
+
+<div class="divider"></div>
+
+<div class="row total">
+  <span>UKUPNO</span>
+  <span></span>
+  <span></span>
+  <span>{{ data.cijena }} €</span>
+</div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <span>Način plaćanja</span>
+    <span>{{ data.paymentType }}</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="center">
+    <span>*1 PDV nije zaračunat sukladno</span>
+    <span>čl. 90. st. 2. Zakona o PDV-u</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="center">
+    Korinik: {{ username }}<br>
+    JIR: {{ data.JIR }}<br>
+    ZKI: {{ data.ZKI }}
+  </div>
+
+  <img class="qr" [src]="fiscalQrImage" />
+
+  <div class="center small">
+    www.semisubmarine-pakostane.com
+    <br><br>
+    Hvala! Thank you!
+    <br><br>
+    Fiskalna blagajna: Neosalon.hr
+  </div>
+
+  </div>
 
 <div class="actions-wrapper" *ngIf="ticketCreated">
 

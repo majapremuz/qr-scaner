@@ -18,6 +18,7 @@
   <a (click)="navList()" [ngClass]="{'active-nav': currentPage === 'kapetan'}">Pregled rezervacija</a>
   <a (click)="navChange()" [ngClass]="{'active-nav': currentPage === 'promjena-rezervacije'}">Promjena rezervacije</a>
   <a (click)="navScanner()" [ngClass]="{'active-nav': currentPage === 'scanner'}">Skener karata</a>
+  <a (click)="logout()">Odjava</a>
 </div>
 
 <ion-content [fullscreen]="true">

@@ -17,6 +17,8 @@ import jsPDF from 'jspdf';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 import { Share } from '@capacitor/share';
+import { AuthService } from 'src/app/services/auth.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-potvrda',
@@ -26,8 +28,13 @@ import { Share } from '@capacitor/share';
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class PotvrdaPage implements OnInit {
-  @ViewChild('ticketPdf', { static: false }) ticketPdf!: ElementRef;
+  @ViewChild('ticketPDF')
+  ticketPDF!: ElementRef;
+
+  @ViewChild('receiptPDF')
+  receiptPDF!: ElementRef;
   qrCodeImage: string = '';
+  fiscalQrImage: string = '';
   currentPage: string = 'potvrda';
   menuOpen = false;
   data: any;
@@ -38,6 +45,7 @@ export class PotvrdaPage implements OnInit {
   showPrinterOptions = false;
   showPdfOptions = false;
   email: string = '';
+  username: string = '';
 
   constructor(
     private router: Router,
@@ -48,7 +56,8 @@ export class PotvrdaPage implements OnInit {
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private alertController: AlertController,
-    private emailComposer: EmailComposer
+    private emailComposer: EmailComposer,
+    private authService: AuthService
   ) { }
 
   async ngOnInit() {
@@ -60,6 +69,7 @@ export class PotvrdaPage implements OnInit {
     this.selectedPrinter = this.printerService.getPrinter();
     console.log('Selected printer:', this.selectedPrinter);
     this.loadDevices();
+    this.username = this.authService.getUsername();
   }
 
   async requestBluetoothPermissions() {
@@ -102,6 +112,29 @@ get totalPassengers(): number {
   return odrasli + djeca + bebe;
 }
 
+async previewPrint() {
+  /*
+    [
+  {
+    "response": "Success",
+    "order": 435,
+    "code": "abc11aa6594325058d66aaa7f56a7d1b9170d4e6",
+    "invoice_number": "Test-1-1",
+    "JIR": "Test12324567890",
+    "ZKI": "T-123456-7890098"
+  }
+]
+  */
+
+  console.log(
+    this.printerService.generateFiscalReceipt(this.data)
+  );
+
+  console.log(
+    this.printerService.generateTicket(this.data)
+  );
+}
+
 savePrinter() {
   this.printerService.setPrinter(this.selectedPrinter);
   this.cdr.detectChanges();
@@ -125,6 +158,7 @@ async generateQR(text: string) {
 }
 
 async onPay() {
+
   const data = this.računService.getData();
 
   const full = await this.isBoatFull(data);
@@ -142,6 +176,12 @@ async onPay() {
     return;
   }
 
+  data.status =
+    data.orderMode === 'karta'
+      ? 2
+      : 1;
+
+
 
   const response = await this.createOrder(data);
 
@@ -153,7 +193,25 @@ async onPay() {
   data.qrCode = response.code;
   data.ticketNumber = response.order;
 
+  data.invoice_number =
+  response.invoice_number;
+
+  data.JIR =
+    response.JIR;
+
+  data.ZKI =
+    response.ZKI;
+
   this.qrCodeImage = await this.generateQR(data.qrCode);
+
+  const fiscalUrl =
+  `https://porezna.gov.hr/rn?jir=${data.JIR}` +
+  `&datv=${this.formatDate(data.datum)}` +
+  `&izn=${data.cijena}`;
+
+  this.fiscalQrImage =
+  await this.generateQR(fiscalUrl);
+  console.log('FISCAL QR:', this.fiscalQrImage);
   
   await this.saveToServer(data);
 
@@ -217,12 +275,7 @@ async generatePdfFile(): Promise<string | null> {
 
   try {
 
-    const element = this.ticketPdf.nativeElement;
-    console.log('PDF ELEMENT:', element);
-
-    const canvas = await html2canvas(element);
-
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    this.cdr.detectChanges();
 
     const pdf = new jsPDF({
       orientation: 'portrait',
@@ -230,19 +283,52 @@ async generatePdfFile(): Promise<string | null> {
       format: 'a4'
     });
 
-    const imgWidth = 180;
+    // PAGE 1 - TICKET
 
-    const imgHeight =
-      canvas.height * imgWidth / canvas.width;
+    const ticketCanvas = await html2canvas(
+      this.ticketPDF.nativeElement,
+      { scale: 2 }
+    );
+
+    const ticketImg =
+      ticketCanvas.toDataURL('image/jpeg', 1.0);
 
     pdf.addImage(
-      imgData,
+      ticketImg,
       'JPEG',
       15,
       20,
-      imgWidth,
-      imgHeight
+      180,
+      ticketCanvas.height * 180 / ticketCanvas.width
     );
+
+    // PAGE 2 - RECEIPT
+
+    if (
+      this.data.status === 2 &&
+      this.receiptPDF
+    ) {
+
+      pdf.addPage();
+
+      const receiptCanvas =
+        await html2canvas(
+          this.receiptPDF.nativeElement,
+          { scale: 2 }
+        );
+
+      const receiptImg =
+        receiptCanvas.toDataURL('image/jpeg', 1.0);
+
+      pdf.addImage(
+        receiptImg,
+        'JPEG',
+        15,
+        20,
+        180,
+        receiptCanvas.height * 180 / receiptCanvas.width
+      );
+    }
 
     const pdfBlob = pdf.output('blob');
 
@@ -252,13 +338,12 @@ async generatePdfFile(): Promise<string | null> {
     const fileName =
       `ticket-${this.data.ticketNumber}.pdf`;
 
-    const savedFile = await Filesystem.writeFile({
-      path: fileName,
-      data: base64 as string,
-      directory: Directory.Cache
-    });
-
-    console.log('PDF SAVED:', savedFile.uri);
+    const savedFile =
+      await Filesystem.writeFile({
+        path: fileName,
+        data: base64 as string,
+        directory: Directory.Cache
+      });
 
     return savedFile.uri;
 
@@ -462,6 +547,11 @@ async isBoatFull(data: any): Promise<boolean> {
   navScanner() {
     this.menuOpen = false;
     this.router.navigate(['/scanner']);
+  }
+
+  logout() {
+    this.authService.logout();
+    App.exitApp();
   }
 
 }

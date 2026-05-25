@@ -1,0 +1,46 @@
+ion-content {
+  --background: url('/assets/naslovna.jpg') no-repeat center center / cover;
+  font-size: 0.875rem;
+  font-family: 'Open Sans', sans-serif;
+}
+
+ion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  margin-top: 4em;
+  background-color: #343640;
+  border-radius: 0.5em;
+}
+
+form {
+  width: 100%;
+}
+
+ion-input {
+  width: 100%;
+  min-height: 8vmin;
+  margin: 1em 0;
+  background-color: white;
+  color: #333;
+  text-indent: 0.4rem;
+  font-size: 0.875rem;
+}
+
+.username {
+  margin-bottom: 1.5rem;
+}
+
+ion-button {
+  width: 100%;
+  min-height: 15vmin;
+  --background: #ffc11e;
+  color: #343640;
+  text-transform: none;
+  border: none;
+  border-radius: 0.5em;
+  font-size: 0.875rem;
+  margin: 1em 0;
+  padding: 1em 0;
+}

@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { RačunService } from 'src/app/services/račun.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { forkJoin } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-kapetan',
@@ -24,7 +26,8 @@ export class KapetanPage implements OnInit {
   constructor(
     private router: Router,
     public racunService: RačunService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {}
@@ -113,5 +116,9 @@ navHome() {
     this.router.navigate(['/scanner']);
   }
 
+  logout() {
+    this.authService.logout();
+    App.exitApp();
+  }
 
 }
