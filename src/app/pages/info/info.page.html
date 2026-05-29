@@ -31,11 +31,17 @@
           *ngFor="let t of productTimes"
           lines="none"
           class="radio-container"
+          [class.blocked]="isBlockedTime(t.id)"
           [class.disabled-time]="
           isPastTime(t.title) ||
           t.availableSeats <= 0
           "
-        >
+          [disabled]="
+          isPastTime(t.title) ||
+          isBlockedTime(t.id) ||
+          t.availableSeats <= 0
+          "
+         >
 
           <ion-radio
             slot="start"
@@ -60,6 +66,11 @@
                 POPUNJENO
               </span>
             </h2>
+
+            <div *ngIf="isBlockedTime(t.id)" class="blocked-text">
+              Termin nije dostupan
+            </div>
+
           </ion-label>
 
         </ion-item>

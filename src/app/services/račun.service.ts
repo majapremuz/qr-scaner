@@ -114,6 +114,16 @@ getOrdersByDateAndTime(date: string, time: string) {
   );
 }
 
+getBlockedTimes(date: string) {
+
+  return this.http.post(
+    'https://tickets.semisubmarine-pakostane.com/api/checktimes.php',
+    {
+      date: date
+    }
+  );
+}
+
 mapTimeToId(time: string): number {
   const productTimes = this.productTimesCache;
 

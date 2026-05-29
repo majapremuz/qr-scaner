@@ -32,6 +32,8 @@ export class HomePage implements OnInit {
   types: any[] = [];
   vrstaVoznje: any = null;
   availableSeats: number = 12;
+  blockedDates: string[] = [];
+  highlightedDates: any[] = [];
 
   constructor(
     private router: Router,
@@ -59,7 +61,9 @@ export class HomePage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    await this.loadBlockedDates();
+  }
 
   toggleMenu() {
   this.menuOpen = !this.menuOpen;
@@ -76,6 +80,37 @@ isFormValid(): boolean {
   return true;
 }
 
+async loadBlockedDates() {
+  try {
+
+    const res: any = await this.http.get(
+      'https://tickets.semisubmarine-pakostane.com/api/checkdates.php'
+    ).toPromise();
+
+    console.log('BLOCKED DATES:', res);
+
+    this.blockedDates = res.map((d: any) => d.date);
+
+    this.highlightedDates = this.blockedDates.map(date => ({
+      date,
+      textColor: '#ffffff',
+      backgroundColor: '#d32f2f'
+    }));
+
+    this.cdr.detectChanges();
+
+  } catch (err) {
+    console.error('Blocked dates error:', err);
+  }
+}
+
+isDateBlocked(date: string): boolean {
+
+  const cleanDate = date.split('T')[0];
+
+  return this.blockedDates.includes(cleanDate);
+}
+
 getTodayLocal(): string {
   const today = new Date();
   const offset = today.getTimezoneOffset();
@@ -89,6 +124,18 @@ maxDate = new Date(new Date().setDate(new Date().getDate() + 30))
   .split('T')[0];
 
 onDateChange(event: any) {
+
+  const selectedDate = event.detail.value.split('T')[0];
+
+  if (this.isDateBlocked(selectedDate)) {
+
+    alert('Za odabrani datum nije moguće napraviti rezervaciju.');
+
+    this.datum = '';
+
+    return;
+  }
+
   this.datum = event.detail.value;
   this.isDateModalOpen = false;
 }

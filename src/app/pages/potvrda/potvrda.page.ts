@@ -70,6 +70,7 @@ export class PotvrdaPage implements OnInit {
     console.log('Selected printer:', this.selectedPrinter);
     this.loadDevices();
     this.username = this.authService.getUsername();
+    this.email = this.data?.email || '';
   }
 
   async requestBluetoothPermissions() {
@@ -113,19 +114,6 @@ get totalPassengers(): number {
 }
 
 async previewPrint() {
-  /*
-    [
-  {
-    "response": "Success",
-    "order": 435,
-    "code": "abc11aa6594325058d66aaa7f56a7d1b9170d4e6",
-    "invoice_number": "Test-1-1",
-    "JIR": "Test12324567890",
-    "ZKI": "T-123456-7890098"
-  }
-]
-  */
-
   console.log(
     this.printerService.generateFiscalReceipt(this.data)
   );

@@ -35,6 +35,7 @@ export class InfoPage implements OnInit {
   sirenTimes: string[] = [];
   isMermaidShow = false;
   MAX_SEATS = 12;
+  blockedTimes: any[] = [];
 
   constructor(
     private router: Router,
@@ -82,6 +83,8 @@ isFormValid(): boolean {
 async loadAllData() {
 
   const data = this.računService.getData();
+
+  await this.loadBlockedTimes();
 
   const [prices, times, types, sirenTimes, pricelists] =
     await Promise.all([
@@ -206,6 +209,48 @@ const end =
   console.log('FINAL TIMES:', this.productTimes);
 
   this.cdr.detectChanges();
+}
+
+async loadBlockedTimes() {
+
+  try {
+
+    const data = this.računService.getData();
+
+    const selectedDate =
+      this.formatDate(data.datum);
+
+    const res: any = await firstValueFrom(
+      this.računService.getBlockedTimes(selectedDate)
+    );
+
+    console.log('BLOCKED TIMES:', res);
+
+    this.blockedTimes = res || [];
+
+  } catch (err) {
+
+    console.error('Blocked times error:', err);
+
+    this.blockedTimes = [];
+  }
+}
+
+isBlockedTime(timeId: number): boolean {
+
+  const data = this.računService.getData();
+
+  const selectedDate =
+    this.formatDate(data.datum);
+
+  return this.blockedTimes.some((t: any) => {
+
+    return (
+      Number(t.time_id) === Number(timeId) &&
+      t.date === selectedDate
+    );
+
+  });
 }
 
 getPriceItem(t: any): any {

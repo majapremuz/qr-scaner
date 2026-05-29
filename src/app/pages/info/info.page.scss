@@ -118,3 +118,15 @@ ion-button {
 ion-button[disabled] {
   opacity: 0.5;
 }
+
+.blocked {
+  opacity: 0.5;
+  border: 2px solid red;
+  padding: 0 0.5rem;
+}
+
+.blocked-text {
+  color: red;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
