@@ -63,10 +63,6 @@ isFormValid(): boolean {
     return false;
   }
 
-  if (!this.email?.trim()) {
-    return false;
-  }
-
   if (!this.orderMode) {
     return false;
   }
